@@ -1,0 +1,31 @@
+{
+  "name": "carreira-pro",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "cd apps/frontend && npm run dev",
+    "dev:backend": "cd apps/backend && npm run start:dev",
+    "dev:all": "concurrently -n FRONTEND,BACKEND -c green,blue \"cd apps/frontend && npm run dev\" \"cd apps/backend && npm run start:dev\"",
+    "prepare": "husky install",
+    "precommit:scan": "node scripts/check-secrets.js",
+    "build": "npm -ws run build",
+    "lint": "npm -ws run lint"
+  },
+  "devDependencies": {
+    "@next/swc-win32-x64-msvc": "^15.4.6",
+    "@types/pdfkit": "^0.17.2",
+    "concurrently": "^9.2.0",
+    "husky": "^9.1.7",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.54.2",
+    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.16.0",
+    "stripe": "^18.4.0"
+  }
+}

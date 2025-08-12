@@ -1,0 +1,28 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f3f4f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#g)"/>
+  <rect x="140" y="120" width="920" height="560" rx="8" fill="#fff" stroke="#e5e7eb"/>
+  <rect x="180" y="160" width="320" height="28" rx="4" fill="#111"/>
+  <rect x="180" y="200" width="220" height="16" rx="3" fill="#374151"/>
+  <rect x="180" y="240" width="760" height="2" fill="#e5e7eb"/>
+  <rect x="180" y="264" width="160" height="12" rx="3" fill="#111"/>
+  <rect x="180" y="286" width="780" height="10" rx="3" fill="#9ca3af"/>
+  <rect x="180" y="302" width="740" height="10" rx="3" fill="#d1d5db"/>
+  <rect x="180" y="340" width="160" height="12" rx="3" fill="#111"/>
+  <rect x="180" y="360" width="740" height="10" rx="3" fill="#9ca3af"/>
+  <rect x="180" y="376" width="700" height="10" rx="3" fill="#d1d5db"/>
+  <rect x="180" y="416" width="140" height="12" rx="3" fill="#111"/>
+  <rect x="180" y="436" width="360" height="10" rx="3" fill="#9ca3af"/>
+  <rect x="560" y="436" width="320" height="10" rx="3" fill="#d1d5db"/>
+  <rect x="180" y="476" width="760" height="2" fill="#e5e7eb"/>
+  <rect x="180" y="500" width="200" height="12" rx="3" fill="#111"/>
+  <rect x="180" y="522" width="460" height="10" rx="3" fill="#9ca3af"/>
+  <text x="180" y="560" font-family="Inter, Arial" font-size="14" fill="#6b7280">Pré-visualização ATS Preto & Branco</text>
+</svg>
+
+

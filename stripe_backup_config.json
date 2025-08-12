@@ -1,0 +1,52 @@
+{
+  "stripe_integration_backup": {
+    "date": "2025-08-11",
+    "status": "completed",
+    "account_id": "acct_1RgyjYLheOx3CRxG",
+    "products": {
+      "free": {
+        "product_id": "prod_Sqm2oY4B4GDMRF",
+        "price_id": "price_1Rv4VLLheOx3CRxGU3ccl6yu",
+        "amount": 0,
+        "currency": "brl",
+        "interval": "month"
+      },
+      "premium": {
+        "product_id": "prod_Sqm2MsEB5dWAiX",
+        "price_id": "price_1Rv4VULheOx3CRxGFoQnBFfy",
+        "amount": 4990,
+        "currency": "brl",
+        "interval": "month"
+      },
+      "pro": {
+        "product_id": "prod_Sqm29m1UKORw2f",
+        "price_id": "price_1Rv4VmLheOx3CRxGAEoX4FmG",
+        "amount": 9990,
+        "currency": "brl",
+        "interval": "month"
+      }
+    },
+    "webhook_config": {
+      "local_endpoint": "localhost:55311/billing/webhook",
+      "production_endpoint": "https://seudominio.com/billing/webhook",
+      "events": [
+        "checkout.session.completed",
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted"
+      ],
+      "webhook_secret": "whsec_deaf2d80ef975e564a6302066cec545efb22bad5e63b0e340a0720142c74c4b1"
+    },
+    "test_results": {
+      "webhook_tests": "✅ Passed",
+      "checkout_session": "✅ Passed",
+      "user_registration": "✅ Passed",
+      "api_authentication": "✅ Passed"
+    },
+    "commands": {
+      "start_webhook_listener": "cd \"D:\\carreira pro\\stripe_cli\" && ./stripe.exe listen --forward-to localhost:55311/billing/webhook",
+      "start_backend": "cd \"D:\\carreira pro\\apps\\backend\" && npm run start:dev",
+      "test_checkout": "./stripe.exe checkout sessions create --mode=subscription --success-url=\"http://localhost:55310/?billing=success\" --cancel-url=\"http://localhost:55310/?billing=canceled\" -d \"line_items[0][price]=price_1Rv4VULheOx3CRxGFoQnBFfy\" -d \"line_items[0][quantity]=1\""
+    }
+  }
+}

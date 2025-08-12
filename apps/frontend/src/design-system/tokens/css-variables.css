@@ -1,0 +1,393 @@
+/**
+ * Carreira Pro Design System - CSS Custom Properties
+ * 
+ * Auto-generated CSS custom properties from design tokens
+ * These variables are used throughout the design system
+ */
+
+:root {
+  /* Reference Tokens - Colors */
+  --ref-color-brand-50: oklch(0.985 0.001 106.423);
+  --ref-color-brand-100: oklch(0.97 0.001 106.424);
+  --ref-color-brand-200: oklch(0.923 0.003 48.717);
+  --ref-color-brand-300: oklch(0.709 0.01 56.259);
+  --ref-color-brand-400: oklch(0.553 0.013 58.071);
+  --ref-color-brand-500: oklch(0.216 0.006 56.043);
+  --ref-color-brand-600: oklch(0.268 0.007 34.298);
+  --ref-color-brand-700: oklch(0.147 0.004 49.25);
+  --ref-color-brand-800: oklch(0.147 0.004 49.25);
+  --ref-color-brand-900: oklch(0.147 0.004 49.25);
+
+  --ref-color-neutral-0: oklch(1 0 0);
+  --ref-color-neutral-50: oklch(0.985 0.001 106.423);
+  --ref-color-neutral-100: oklch(0.97 0.001 106.424);
+  --ref-color-neutral-200: oklch(0.923 0.003 48.717);
+  --ref-color-neutral-300: oklch(0.709 0.01 56.259);
+  --ref-color-neutral-400: oklch(0.553 0.013 58.071);
+  --ref-color-neutral-500: oklch(0.368 0.009 34.298);
+  --ref-color-neutral-600: oklch(0.268 0.007 34.298);
+  --ref-color-neutral-700: oklch(0.216 0.006 56.043);
+  --ref-color-neutral-800: oklch(0.147 0.004 49.25);
+  --ref-color-neutral-900: oklch(0.098 0.003 49.25);
+  --ref-color-neutral-1000: oklch(0 0 0);
+
+  --ref-color-success-50: oklch(0.95 0.02 142);
+  --ref-color-success-100: oklch(0.9 0.04 142);
+  --ref-color-success-500: oklch(0.6 0.15 142);
+  --ref-color-success-600: oklch(0.5 0.18 142);
+  --ref-color-success-900: oklch(0.3 0.12 142);
+
+  --ref-color-warning-50: oklch(0.95 0.02 90);
+  --ref-color-warning-100: oklch(0.9 0.04 90);
+  --ref-color-warning-500: oklch(0.7 0.15 90);
+  --ref-color-warning-600: oklch(0.6 0.18 90);
+  --ref-color-warning-900: oklch(0.4 0.12 90);
+
+  --ref-color-error-50: oklch(0.95 0.02 27);
+  --ref-color-error-100: oklch(0.9 0.04 27);
+  --ref-color-error-500: oklch(0.577 0.245 27.325);
+  --ref-color-error-600: oklch(0.5 0.28 27);
+  --ref-color-error-900: oklch(0.3 0.2 27);
+
+  --ref-color-info-50: oklch(0.95 0.02 240);
+  --ref-color-info-100: oklch(0.9 0.04 240);
+  --ref-color-info-500: oklch(0.6 0.15 240);
+  --ref-color-info-600: oklch(0.5 0.18 240);
+  --ref-color-info-900: oklch(0.3 0.12 240);
+
+  /* Reference Tokens - Typography */
+  --ref-font-size-xs: 0.75rem;
+  --ref-font-size-sm: 0.875rem;
+  --ref-font-size-base: 1rem;
+  --ref-font-size-lg: 1.125rem;
+  --ref-font-size-xl: 1.25rem;
+  --ref-font-size-2xl: 1.5rem;
+  --ref-font-size-3xl: 1.875rem;
+  --ref-font-size-4xl: 2.25rem;
+  --ref-font-size-5xl: 3rem;
+  --ref-font-size-6xl: 3.75rem;
+  --ref-font-size-7xl: 4.5rem;
+  --ref-font-size-8xl: 6rem;
+  --ref-font-size-9xl: 8rem;
+
+  --ref-font-weight-thin: 100;
+  --ref-font-weight-extralight: 200;
+  --ref-font-weight-light: 300;
+  --ref-font-weight-normal: 400;
+  --ref-font-weight-medium: 500;
+  --ref-font-weight-semibold: 600;
+  --ref-font-weight-bold: 700;
+  --ref-font-weight-extrabold: 800;
+  --ref-font-weight-black: 900;
+
+  --ref-line-height-none: 1;
+  --ref-line-height-tight: 1.25;
+  --ref-line-height-snug: 1.375;
+  --ref-line-height-normal: 1.5;
+  --ref-line-height-relaxed: 1.625;
+  --ref-line-height-loose: 2;
+
+  --ref-letter-spacing-tighter: -0.05em;
+  --ref-letter-spacing-tight: -0.025em;
+  --ref-letter-spacing-normal: 0;
+  --ref-letter-spacing-wide: 0.025em;
+  --ref-letter-spacing-wider: 0.05em;
+  --ref-letter-spacing-widest: 0.1em;
+
+  /* Reference Tokens - Spacing */
+  --ref-spacing-0: 0;
+  --ref-spacing-px: 1px;
+  --ref-spacing-0_5: 0.125rem;
+  --ref-spacing-1: 0.25rem;
+  --ref-spacing-1_5: 0.375rem;
+  --ref-spacing-2: 0.5rem;
+  --ref-spacing-2_5: 0.625rem;
+  --ref-spacing-3: 0.75rem;
+  --ref-spacing-3_5: 0.875rem;
+  --ref-spacing-4: 1rem;
+  --ref-spacing-5: 1.25rem;
+  --ref-spacing-6: 1.5rem;
+  --ref-spacing-7: 1.75rem;
+  --ref-spacing-8: 2rem;
+  --ref-spacing-9: 2.25rem;
+  --ref-spacing-10: 2.5rem;
+  --ref-spacing-11: 2.75rem;
+  --ref-spacing-12: 3rem;
+  --ref-spacing-14: 3.5rem;
+  --ref-spacing-16: 4rem;
+  --ref-spacing-20: 5rem;
+  --ref-spacing-24: 6rem;
+  --ref-spacing-28: 7rem;
+  --ref-spacing-32: 8rem;
+  --ref-spacing-36: 9rem;
+  --ref-spacing-40: 10rem;
+  --ref-spacing-44: 11rem;
+  --ref-spacing-48: 12rem;
+  --ref-spacing-52: 13rem;
+  --ref-spacing-56: 14rem;
+  --ref-spacing-60: 15rem;
+  --ref-spacing-64: 16rem;
+  --ref-spacing-72: 18rem;
+  --ref-spacing-80: 20rem;
+  --ref-spacing-96: 24rem;
+
+  /* Reference Tokens - Border Radius */
+  --ref-border-radius-none: 0;
+  --ref-border-radius-sm: 0.125rem;
+  --ref-border-radius-default: 0.25rem;
+  --ref-border-radius-md: 0.375rem;
+  --ref-border-radius-lg: 0.5rem;
+  --ref-border-radius-xl: 0.75rem;
+  --ref-border-radius-2xl: 1rem;
+  --ref-border-radius-3xl: 1.5rem;
+  --ref-border-radius-full: 9999px;
+
+  /* Reference Tokens - Box Shadow */
+  --ref-box-shadow-none: none;
+  --ref-box-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ref-box-shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --ref-box-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --ref-box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ref-box-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --ref-box-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --ref-box-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+  /* Reference Tokens - Animation */
+  --ref-duration-instant: 0ms;
+  --ref-duration-fast: 150ms;
+  --ref-duration-normal: 300ms;
+  --ref-duration-slow: 500ms;
+  --ref-duration-slower: 750ms;
+  --ref-duration-slowest: 1000ms;
+
+  --ref-easing-linear: linear;
+  --ref-easing-ease: ease;
+  --ref-easing-ease-in: ease-in;
+  --ref-easing-ease-out: ease-out;
+  --ref-easing-ease-in-out: ease-in-out;
+  --ref-easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ref-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Reference Tokens - Z-Index */
+  --ref-z-index-hide: -1;
+  --ref-z-index-auto: auto;
+  --ref-z-index-base: 0;
+  --ref-z-index-docked: 10;
+  --ref-z-index-dropdown: 1000;
+  --ref-z-index-sticky: 1100;
+  --ref-z-index-banner: 1200;
+  --ref-z-index-overlay: 1300;
+  --ref-z-index-modal: 1400;
+  --ref-z-index-popover: 1500;
+  --ref-z-index-skip-link: 1600;
+  --ref-z-index-toast: 1700;
+  --ref-z-index-tooltip: 1800;
+
+  /* System Tokens - Semantic Colors */
+  --sys-color-bg-primary: var(--ref-color-neutral-0);
+  --sys-color-bg-secondary: var(--ref-color-neutral-50);
+  --sys-color-bg-tertiary: var(--ref-color-neutral-100);
+  --sys-color-bg-inverse: var(--ref-color-neutral-900);
+
+  --sys-color-text-primary: var(--ref-color-neutral-900);
+  --sys-color-text-secondary: var(--ref-color-neutral-600);
+  --sys-color-text-tertiary: var(--ref-color-neutral-400);
+  --sys-color-text-inverse: var(--ref-color-neutral-0);
+  --sys-color-text-brand: var(--ref-color-brand-500);
+
+  --sys-color-border-primary: var(--ref-color-neutral-200);
+  --sys-color-border-secondary: var(--ref-color-neutral-100);
+  --sys-color-border-focus: var(--ref-color-brand-500);
+  --sys-color-border-error: var(--ref-color-error-500);
+  --sys-color-border-success: var(--ref-color-success-500);
+  --sys-color-border-warning: var(--ref-color-warning-500);
+
+  --sys-color-interactive-primary: var(--ref-color-brand-500);
+  --sys-color-interactive-primary-hover: var(--ref-color-brand-600);
+  --sys-color-interactive-primary-active: var(--ref-color-brand-700);
+  --sys-color-interactive-secondary: var(--ref-color-neutral-100);
+  --sys-color-interactive-secondary-hover: var(--ref-color-neutral-200);
+  --sys-color-interactive-secondary-active: var(--ref-color-neutral-300);
+
+  --sys-color-status-success: var(--ref-color-success-500);
+  --sys-color-status-warning: var(--ref-color-warning-500);
+  --sys-color-status-error: var(--ref-color-error-500);
+  --sys-color-status-info: var(--ref-color-info-500);
+
+  /* System Tokens - Layout */
+  --sys-layout-spacing-xs: var(--ref-spacing-1);
+  --sys-layout-spacing-sm: var(--ref-spacing-2);
+  --sys-layout-spacing-md: var(--ref-spacing-4);
+  --sys-layout-spacing-lg: var(--ref-spacing-6);
+  --sys-layout-spacing-xl: var(--ref-spacing-8);
+  --sys-layout-spacing-2xl: var(--ref-spacing-12);
+  --sys-layout-spacing-3xl: var(--ref-spacing-16);
+  --sys-layout-spacing-4xl: var(--ref-spacing-24);
+
+  --sys-layout-container-sm: 640px;
+  --sys-layout-container-md: 768px;
+  --sys-layout-container-lg: 1024px;
+  --sys-layout-container-xl: 1280px;
+  --sys-layout-container-2xl: 1536px;
+
+  /* System Tokens - Interaction */
+  --sys-interaction-duration-instant: var(--ref-duration-instant);
+  --sys-interaction-duration-fast: var(--ref-duration-fast);
+  --sys-interaction-duration-normal: var(--ref-duration-normal);
+  --sys-interaction-duration-slow: var(--ref-duration-slow);
+
+  --sys-interaction-focus-ring-width: 2px;
+  --sys-interaction-focus-ring-offset: 2px;
+  --sys-interaction-focus-ring-color: var(--ref-color-brand-500);
+
+  --sys-interaction-touch-target-min-height: 44px;
+  --sys-interaction-touch-target-min-width: 44px;
+
+  /* Component Tokens - Button */
+  --comp-button-size-sm-height: 32px;
+  --comp-button-size-sm-padding-x: var(--sys-layout-spacing-sm);
+  --comp-button-size-sm-font-size: var(--ref-font-size-sm);
+
+  --comp-button-size-md-height: 40px;
+  --comp-button-size-md-padding-x: var(--sys-layout-spacing-md);
+  --comp-button-size-md-font-size: var(--ref-font-size-base);
+
+  --comp-button-size-lg-height: 48px;
+  --comp-button-size-lg-padding-x: var(--sys-layout-spacing-lg);
+  --comp-button-size-lg-font-size: var(--ref-font-size-lg);
+
+  --comp-button-border-radius: var(--ref-border-radius-md);
+  --comp-button-font-weight: var(--ref-font-weight-medium);
+
+  --comp-button-primary-bg: var(--sys-color-interactive-primary);
+  --comp-button-primary-color: var(--sys-color-text-inverse);
+  --comp-button-primary-border: transparent;
+  --comp-button-primary-bg-hover: var(--sys-color-interactive-primary-hover);
+  --comp-button-primary-bg-active: var(--sys-color-interactive-primary-active);
+
+  --comp-button-secondary-bg: var(--sys-color-interactive-secondary);
+  --comp-button-secondary-color: var(--sys-color-text-primary);
+  --comp-button-secondary-border: var(--sys-color-border-primary);
+  --comp-button-secondary-bg-hover: var(--sys-color-interactive-secondary-hover);
+  --comp-button-secondary-bg-active: var(--sys-color-interactive-secondary-active);
+
+  --comp-button-ghost-bg: transparent;
+  --comp-button-ghost-color: var(--sys-color-text-primary);
+  --comp-button-ghost-border: transparent;
+  --comp-button-ghost-bg-hover: var(--sys-color-interactive-secondary);
+  --comp-button-ghost-bg-active: var(--sys-color-interactive-secondary-hover);
+
+  /* Component Tokens - Input */
+  --comp-input-size-sm-height: 32px;
+  --comp-input-size-sm-padding-x: var(--sys-layout-spacing-sm);
+  --comp-input-size-sm-font-size: var(--ref-font-size-sm);
+
+  --comp-input-size-md-height: 40px;
+  --comp-input-size-md-padding-x: var(--sys-layout-spacing-md);
+  --comp-input-size-md-font-size: var(--ref-font-size-base);
+
+  --comp-input-size-lg-height: 48px;
+  --comp-input-size-lg-padding-x: var(--sys-layout-spacing-lg);
+  --comp-input-size-lg-font-size: var(--ref-font-size-lg);
+
+  --comp-input-bg: var(--sys-color-bg-primary);
+  --comp-input-border: var(--sys-color-border-primary);
+  --comp-input-border-focus: var(--sys-color-border-focus);
+  --comp-input-border-error: var(--sys-color-border-error);
+  --comp-input-color: var(--sys-color-text-primary);
+  --comp-input-placeholder: var(--sys-color-text-tertiary);
+  --comp-input-border-radius: var(--ref-border-radius-md);
+
+  /* Component Tokens - Card */
+  --comp-card-bg: var(--sys-color-bg-primary);
+  --comp-card-border: var(--sys-color-border-primary);
+  --comp-card-border-radius: var(--ref-border-radius-lg);
+  --comp-card-shadow: var(--ref-box-shadow-sm);
+  --comp-card-padding: var(--sys-layout-spacing-lg);
+
+  /* Component Tokens - Modal */
+  --comp-modal-overlay-bg: rgba(0, 0, 0, 0.5);
+  --comp-modal-overlay-backdrop-filter: blur(4px);
+  --comp-modal-content-bg: var(--sys-color-bg-primary);
+  --comp-modal-content-border-radius: var(--ref-border-radius-xl);
+  --comp-modal-content-shadow: var(--ref-box-shadow-2xl);
+  --comp-modal-content-max-width: 500px;
+}
+
+/* Dark Theme Overrides */
+.dark {
+  --sys-color-bg-primary: var(--ref-color-neutral-900);
+  --sys-color-bg-secondary: var(--ref-color-neutral-800);
+  --sys-color-bg-tertiary: var(--ref-color-neutral-700);
+  --sys-color-bg-inverse: var(--ref-color-neutral-0);
+
+  --sys-color-text-primary: var(--ref-color-neutral-50);
+  --sys-color-text-secondary: var(--ref-color-neutral-300);
+  --sys-color-text-tertiary: var(--ref-color-neutral-400);
+  --sys-color-text-inverse: var(--ref-color-neutral-900);
+  --sys-color-text-brand: var(--ref-color-brand-200);
+
+  --sys-color-border-primary: oklch(1 0 0 / 10%);
+  --sys-color-border-secondary: oklch(1 0 0 / 5%);
+  --sys-color-border-focus: var(--ref-color-brand-400);
+  --sys-color-border-error: var(--ref-color-error-400);
+  --sys-color-border-success: var(--ref-color-success-400);
+  --sys-color-border-warning: var(--ref-color-warning-400);
+
+  --sys-color-interactive-primary: var(--ref-color-brand-400);
+  --sys-color-interactive-primary-hover: var(--ref-color-brand-300);
+  --sys-color-interactive-primary-active: var(--ref-color-brand-200);
+  --sys-color-interactive-secondary: var(--ref-color-neutral-700);
+  --sys-color-interactive-secondary-hover: var(--ref-color-neutral-600);
+  --sys-color-interactive-secondary-active: var(--ref-color-neutral-500);
+
+  --sys-interaction-focus-ring-color: var(--ref-color-brand-400);
+
+  /* Update component tokens for dark theme */
+  --comp-button-primary-bg: var(--sys-color-interactive-primary);
+  --comp-button-primary-bg-hover: var(--sys-color-interactive-primary-hover);
+  --comp-button-primary-bg-active: var(--sys-color-interactive-primary-active);
+
+  --comp-button-secondary-bg: var(--sys-color-interactive-secondary);
+  --comp-button-secondary-bg-hover: var(--sys-color-interactive-secondary-hover);
+  --comp-button-secondary-bg-active: var(--sys-color-interactive-secondary-active);
+
+  --comp-button-ghost-bg-hover: var(--sys-color-interactive-secondary);
+  --comp-button-ghost-bg-active: var(--sys-color-interactive-secondary-hover);
+
+  --comp-input-bg: var(--sys-color-bg-primary);
+  --comp-input-border: var(--sys-color-border-primary);
+  --comp-input-border-focus: var(--sys-color-border-focus);
+  --comp-input-color: var(--sys-color-text-primary);
+  --comp-input-placeholder: var(--sys-color-text-tertiary);
+
+  --comp-card-bg: var(--sys-color-bg-primary);
+  --comp-card-border: var(--sys-color-border-primary);
+
+  --comp-modal-content-bg: var(--sys-color-bg-primary);
+}
+
+/* Utility classes for quick token access */
+.text-primary { color: var(--sys-color-text-primary); }
+.text-secondary { color: var(--sys-color-text-secondary); }
+.text-tertiary { color: var(--sys-color-text-tertiary); }
+.text-brand { color: var(--sys-color-text-brand); }
+
+.bg-primary { background-color: var(--sys-color-bg-primary); }
+.bg-secondary { background-color: var(--sys-color-bg-secondary); }
+.bg-tertiary { background-color: var(--sys-color-bg-tertiary); }
+
+.border-primary { border-color: var(--sys-color-border-primary); }
+.border-focus { border-color: var(--sys-color-border-focus); }
+
+.spacing-xs { margin: var(--sys-layout-spacing-xs); }
+.spacing-sm { margin: var(--sys-layout-spacing-sm); }
+.spacing-md { margin: var(--sys-layout-spacing-md); }
+.spacing-lg { margin: var(--sys-layout-spacing-lg); }
+.spacing-xl { margin: var(--sys-layout-spacing-xl); }
+
+.p-xs { padding: var(--sys-layout-spacing-xs); }
+.p-sm { padding: var(--sys-layout-spacing-sm); }
+.p-md { padding: var(--sys-layout-spacing-md); }
+.p-lg { padding: var(--sys-layout-spacing-lg); }
+.p-xl { padding: var(--sys-layout-spacing-xl); }
