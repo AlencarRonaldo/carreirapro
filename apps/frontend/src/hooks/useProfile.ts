@@ -48,6 +48,7 @@ export type Profile = {
   website: string
   email: string
   phone: string
+  maritalStatus?: string
   experiences?: Experience[]
   education?: Education[]
   skills?: Skill[]

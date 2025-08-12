@@ -20,7 +20,13 @@ async function bootstrap() {
     }
   }
   app.enableCors({
-    origin: [/^http:\/\/localhost:\d+$/],
+    origin: [
+      /^http:\/\/localhost:\d+$/,
+      'http://localhost:3000',
+      'http://localhost:3001', 
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001'
+    ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   });
@@ -32,17 +38,39 @@ async function bootstrap() {
   }));
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
-  // Seed demo user if missing (dev only)
+  // Seed demo users if missing (dev only)
   const ds = app.get(DataSource);
   try {
     const repo = ds.getRepository(UserEntity);
+    
+    // Demo user - starter plan
     const demoEmail = 'demo@carreirapro.app';
-    const exists = await repo.findOne({ where: { email: demoEmail } });
-    if (!exists) {
-      const user = repo.create({ email: demoEmail, passwordHash: bcrypt.hashSync('demo123', 10) });
-      await repo.save(user);
+    const demoExists = await repo.findOne({ where: { email: demoEmail } });
+    if (!demoExists) {
+      const demoUser = repo.create({ 
+        email: demoEmail, 
+        passwordHash: bcrypt.hashSync('demo123', 10),
+        name: 'Demo User',
+        plan: 'starter',
+        subscriptionStatus: 'active'
+      });
+      await repo.save(demoUser);
+    }
+
+    // Pro test user
+    const proEmail = 'test@carreirapro.app';
+    const proExists = await repo.findOne({ where: { email: proEmail } });
+    if (!proExists) {
+      const proUser = repo.create({ 
+        email: proEmail, 
+        passwordHash: bcrypt.hashSync('test123', 10),
+        name: 'Test Pro User',
+        plan: 'pro',
+        subscriptionStatus: 'active'
+      });
+      await repo.save(proUser);
     }
   } catch {}
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

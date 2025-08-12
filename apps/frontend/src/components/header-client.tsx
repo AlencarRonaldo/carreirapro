@@ -136,7 +136,7 @@ export default function HeaderClient() {
             ) : (
               !onLoginPage && (
                 <a href="/login" className="inline-flex">
-                  <Button size="sm" className="min-h-[44px] px-6">Login</Button>
+                  <Button variant="outline" size="sm" className="min-h-[44px] px-6">Login</Button>
                 </a>
               )
             )}
@@ -190,7 +190,7 @@ export default function HeaderClient() {
                     ) : (
                       !onLoginPage && (
                         <a href="/login" className="inline-flex w-full">
-                          <Button className="w-full min-h-[44px]">Login</Button>
+                          <Button variant="outline" className="w-full min-h-[44px]">Login</Button>
                         </a>
                       )
                     )}

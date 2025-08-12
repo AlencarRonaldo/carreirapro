@@ -38,6 +38,9 @@ export class ProfileEntity {
   @Column({ type: 'varchar', length: 50, default: '' })
   phone!: string;
 
+  @Column({ type: 'varchar', length: 100, default: '' })
+  maritalStatus!: string;
+
   @OneToMany(() => ExperienceEntity, (e) => e.profile, { cascade: true })
   experiences?: ExperienceEntity[];
 

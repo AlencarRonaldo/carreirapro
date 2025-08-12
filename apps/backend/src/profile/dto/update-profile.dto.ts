@@ -75,6 +75,11 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(50)
   phone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  maritalStatus?: string;
 }
 
 

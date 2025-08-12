@@ -30,6 +30,7 @@ export const profileSchema = z.object({
     .transform((v) => (v === "" ? undefined : v)),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
   phone: z.string().max(50, "Telefone muito longo").optional().or(z.literal("")),
+  maritalStatus: z.string().max(100, "Estado civil muito longo").optional().or(z.literal("")),
 })
 
 // Experience validation schema
@@ -120,5 +121,6 @@ export const transformProfileForAPI = (data: ProfileFormData) => {
     locationCity: data.locationCity?.trim() || undefined,
     locationState: data.locationState?.trim() || undefined,
     locationCountry: data.locationCountry?.trim() || undefined,
+    maritalStatus: data.maritalStatus?.trim() || undefined,
   }
 }

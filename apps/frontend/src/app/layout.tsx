@@ -74,11 +74,25 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" storageKey="carreira-pro-theme">
           <div>
             <HeaderClient />
-            <main className="min-h-screen">
-              {children}
-            </main>
+            {children}
           </div>
         </ThemeProvider>
+        <Script id="browser-extension-cleanup" strategy="beforeInteractive">{`
+          // Suppress hydration warnings from browser extensions
+          const originalError = console.error;
+          console.error = (...args) => {
+            if (typeof args[0] === 'string' && args[0].includes('Hydration failed')) {
+              const message = args[0];
+              if (message.includes('translate-tooltip') || 
+                  message.includes('translator-hidden') ||
+                  message.includes('hidden={true}') ||
+                  message.includes('hidden={null}')) {
+                return; // Suppress extension-related hydration warnings
+              }
+            }
+            originalError.apply(console, args);
+          };
+        `}</Script>
         <Script id="pwa-sw" strategy="afterInteractive">{`
           if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

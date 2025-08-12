@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 // Rate limiting é global via ThrottlerGuard (ver AppModule)
 import { AuthService } from './auth.service';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { IsOptional } from 'class-validator';
 
 class LoginDto {
   @IsEmail()
@@ -12,6 +11,9 @@ class LoginDto {
   password!: string;
 }
 class RegisterDto extends LoginDto {
+  @IsString()
+  @MinLength(2)
+  name!: string;
   @IsOptional()
   @IsString()
   selectedPlan?: 'starter'|'pro'|'team';
@@ -47,7 +49,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    return this.auth.register(body.email, body.password, body.selectedPlan);
+    return this.auth.register(body.email, body.password, body.selectedPlan, body.name);
   }
 
   @Post('forgot-password')
