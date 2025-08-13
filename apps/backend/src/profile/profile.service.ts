@@ -8,6 +8,7 @@ import { SkillEntity } from './skill.entity';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import pdfParse from 'pdf-parse';
 import type { ImportLinkedinDto } from './dto/import-linkedin.dto';
 import { ResumeParserService } from './resume-parser.service';
 
@@ -113,6 +114,7 @@ export class ProfileService {
 
     // Novo parser aprimorado: extrai dados completos quando Context7 não está configurado
     if (!context7Key) {
+      let parsedData: any = null;
       try {
         const text = await this.extractTextBestEffort(file);
         console.log(
@@ -120,7 +122,7 @@ export class ProfileService {
         );
 
         // Usa o novo parser para extrair todos os dados
-        const parsedData = this.resumeParser.parseResumeText(text);
+        parsedData = this.resumeParser.parseResumeText(text);
         console.log(
           '📄 Resume Import - Parsed data:',
           JSON.stringify(parsedData, null, 2),
@@ -270,8 +272,27 @@ export class ProfileService {
         this.store.set(userId, updatedMem);
         return updatedMem;
       } catch (error) {
-        console.error('Resume Import - Error:', error);
-        return this.getOrCreate(userId);
+        console.error('📄 Resume Import - Error during parsing:', error);
+        
+        // Still try to save any partially extracted data
+        const current = await this.getOrCreate(userId);
+        
+        // If we have even basic info, save it
+        if (parsedData?.fullName || parsedData?.email || parsedData?.phone) {
+          try {
+            const partialUpdate = await this.update(userId, {
+              fullName: parsedData.fullName || current.fullName,
+              email: parsedData.email || current.email,
+              phone: parsedData.phone || current.phone,
+            });
+            console.log('📄 Resume Import - Saved partial data despite errors');
+            return partialUpdate;
+          } catch (updateError) {
+            console.error('📄 Resume Import - Failed to save partial data:', updateError);
+          }
+        }
+        
+        throw new Error(`Failed to parse resume: ${error.message}`);
       }
     }
 
@@ -379,11 +400,10 @@ export class ProfileService {
 
     const isPdfByMime = /pdf/.test(mimetype) || name.endsWith('.pdf');
     const isPdfByMagic =
-      buf && buf.length > 4 && buf.slice(0, 4).toString('ascii') === '%PDF';
+      buf && buf.length >= 4 && buf.slice(0, 4).toString('ascii') === '%PDF';
 
     if (isPdfByMime || isPdfByMagic) {
       try {
-        const pdfParse = (await import('pdf-parse')).default;
         const res = await pdfParse(buf);
         let text = String(res?.text || '');
 

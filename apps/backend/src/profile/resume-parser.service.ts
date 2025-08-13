@@ -117,13 +117,25 @@ export class ResumeParserService {
       }
     }
 
-    // Nome (primeiras linhas significativas)
+    // Nome (primeiras linhas significativas) - CORRIGIDO para priorizar nomes próprios
     const nameCandidate = findFirst(
-      (s) =>
+      (s, i) =>
+        // Deve estar nas primeiras 5 linhas
+        i < 5 &&
+        // Padrão de nome com pelo menos 2 palavras
         /^[A-Za-zÀ-ÿ]{2,}\s+[A-Za-zÀ-ÿ]{2,}/.test(s) &&
-        s.length <= 120 &&
+        // Tamanho máximo razoável
+        s.length <= 60 &&
+        // Não deve conter @ (email)
         !/@/.test(s) &&
-        !/\d{4}/.test(s),
+        // Não deve conter anos
+        !/\b(19|20)\d{2}\b/.test(s) &&
+        // Não deve ser seção do currículo
+        !/^(experiences?|experi[eê]ncias?|education|educa[cç][aã]o|habilidades|skills|forma[cç][aã]o|objetivo|perfil)/i.test(s) &&
+        // Não deve ser cargo/profissão comum
+        !/\b(desenvolvedor|developer|analista|engenheiro|gerente|diretor|coordenador|consultor|especialista|arquiteto|designer|programador|técnico|assistente|auxiliar|estagiário|trainee|junior|pleno|senior|sênior)\b/i.test(s) &&
+        // Não deve conter palavras técnicas
+        !/\b(frontend|backend|fullstack|full[\s-]?stack|javascript|python|java|react|angular|vue|node|sql|php|html|css|mobile|web|software|sistemas|tecnologia|digital|consultoria|solutions)\b/i.test(s),
     );
     if (nameCandidate) {
       result.fullName = nameCandidate.line;
@@ -273,26 +285,35 @@ export class ResumeParserService {
         let startDate: string | null = null;
         let endDate: string | null = null;
 
-        // Procura empresa (geralmente vem antes ou depois do cargo)
+        // Look for company both BEFORE and AFTER the job title
         const contextLines = [
-          ...lines.slice(Math.max(0, i - 2), i),
-          ...lines.slice(i + 1, Math.min(i + 5, searchEnd)),
+          ...lines.slice(Math.max(0, i - 3), i), // Look 3 lines before
+          ...lines.slice(i + 1, Math.min(i + 5, searchEnd)), // Look 4 lines after
         ];
 
-        // Padrões de empresas
+        // Enhanced company patterns
         const companyPatterns = [
-          /\b(ltda|ltd|s\.?a\.?|inc|corp|eireli|me|epp|company|empresa|grupo|indústria|comércio|hospital|clínica|escola|universidade|faculdade|instituto)\b/i,
-          /^[A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ][A-Za-záàâãéèêíïóôõöúçñ\s&.]+$/,
+          /\b(ltda|ltd|s\.?a\.?|inc|corp|eireli|me|epp|company|empresa|grupo|indústria|comércio|hospital|clínica|escola|universidade|faculdade|instituto|banco|financeira|seguradora)\b/i,
+          /^[A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ][A-Za-záàâãéèêíïóôõöúçñ\s&.\-]+[A-Za-záàâãéèêíïóôõöúçñ]$/,
+          // Common company name patterns
+          /\b(solutions|sistemas|tecnologia|tech|consultoria|serviços|digital|software|desenvolvimento)\b/i,
         ];
 
-        for (const contextLine of contextLines) {
+        // Try to find company name - prioritize lines that come BEFORE the job title
+        const beforeLines = lines.slice(Math.max(0, i - 3), i);
+        const afterLines = lines.slice(i + 1, Math.min(i + 5, searchEnd));
+        const allContextLines = [...beforeLines, ...afterLines];
+
+        for (const contextLine of allContextLines) {
           if (company) break;
+          
+          // Skip lines that look like job titles or dates
+          if (roleKeywords.some(rx => rx.test(contextLine))) continue;
+          if (/\b(19|20)\d{2}\b/.test(contextLine)) continue;
+          if (contextLine.length < 3 || contextLine.length > 150) continue;
+          
           for (const pattern of companyPatterns) {
-            if (
-              pattern.test(contextLine) &&
-              contextLine.length <= 150 &&
-              !/@/.test(contextLine)
-            ) {
+            if (pattern.test(contextLine) && !/@/.test(contextLine)) {
               company = contextLine.replace(/^[•\-]\s*/, '').trim();
               break;
             }
