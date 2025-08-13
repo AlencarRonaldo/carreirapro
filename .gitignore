@@ -4,3 +4,19 @@ node_modules
 /dist
 /build
 stripe_backup_config.json
+
+# Logs
+*.log
+*.err
+*.out
+dev.*.log
+backend-test.log
+frontend-test.log
+
+# Test files
+test-*.js
+quick-test.js
+simple-test.js
+
+# Debug files
+PDF_DEBUG_*

@@ -141,16 +141,41 @@ export class ResumeParserService {
       result.fullName = nameCandidate.line;
     }
 
-    // Headline/Cargo atual (linha após o nome)
+    // Headline/Cargo atual - melhorado para detectar resumo profissional
     if (nameCandidate) {
-      const headlineCandidate = findFirst(
-        (s, i) =>
-          i > nameCandidate.index &&
-          i < nameCandidate.index + 3 &&
-          /[A-Za-zÀ-ÿ]{3,}/.test(s) &&
-          !/@/.test(s) &&
-          s.length <= 150,
+      // Primeiro procura por "RESUMO PROFISSIONAL" ou texto após ele
+      const resumoProfissionalIdx = lines.findIndex(l => 
+        /^(resumo\s+profissional|perfil\s+profissional|objetivo|perfil)/i.test(l)
       );
+      
+      let headlineCandidate = null;
+      
+      if (resumoProfissionalIdx >= 0) {
+        // Busca texto após "RESUMO PROFISSIONAL"
+        for (let i = resumoProfissionalIdx + 1; i < Math.min(resumoProfissionalIdx + 5, lines.length); i++) {
+          const line = lines[i];
+          if (line.length > 20 && line.length <= 300 && 
+              !/^(experi[eê]ncia|forma[cç][aã]o|habilidades|atual\s*-\s*atual)/i.test(line) &&
+              !/@/.test(line)) {
+            headlineCandidate = { line, index: i };
+            break;
+          }
+        }
+      }
+      
+      // Se não encontrou resumo profissional, busca linha após o nome
+      if (!headlineCandidate) {
+        headlineCandidate = findFirst(
+          (s, i) =>
+            i > nameCandidate.index &&
+            i < nameCandidate.index + 3 &&
+            /[A-Za-zÀ-ÿ]{3,}/.test(s) &&
+            !/@/.test(s) &&
+            s.length <= 150 &&
+            !/^(resumo\s+profissional|atual\s*-\s*atual)/i.test(s),
+        );
+      }
+      
       if (headlineCandidate) {
         result.headline = headlineCandidate.line;
       }
@@ -236,10 +261,10 @@ export class ResumeParserService {
       /\b(CEO|CFO|CTO|CMO|COO|CLT|PJ|MEI)\b/i,
     ];
 
-    // Encontra seção de experiências
+    // Encontra seção de experiências - deve ser uma linha de cabeçalho, não parte do texto
     const expHeaderIdx = lines.findIndex((l) =>
-      /(experi[eê]ncia|profissional|trabalho|emprego|hist[óo]rico\s+profissional|atua[çc][ãa]o)/i.test(
-        l,
+      /^(experi[eê]ncia\s+profissional|hist[óo]rico\s+profissional|atua[çc][ãa]o\s+profissional|trabalhos?\s+realizados?)$/i.test(
+        l.trim(),
       ),
     );
 
@@ -256,6 +281,11 @@ export class ResumeParserService {
 
     for (let i = startIdx; i < searchEnd && experiences.length < 15; i++) {
       const line = lines[i];
+
+      // Pula linhas que não devem ser tratadas como experiência
+      if (/^(atual\s*[-–]\s*atual|resumo\s+profissional)/i.test(line)) {
+        continue;
+      }
 
       // Verifica se é um cargo
       let isRole = false;
@@ -323,9 +353,10 @@ export class ResumeParserService {
         // Busca datas
         const dateContext = contextLines.join(' ');
 
-        // Múltiplos formatos de data
+        // Múltiplos formatos de data - melhorado para tratar "Atual - Atual"
         const dateFormats = [
           {
+            // Formato: Janeiro 2020 - Presente
             pattern:
               /(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*\.?\s*\/?\s*(\d{4})/gi,
             parse: (matches: RegExpMatchArray[]) => ({
@@ -338,6 +369,7 @@ export class ResumeParserService {
             }),
           },
           {
+            // Formato: 01/2020 - 12/2023
             pattern: /(\d{1,2})\/(\d{4})/g,
             parse: (matches: RegExpMatchArray[]) => ({
               start: matches[0]
@@ -349,7 +381,8 @@ export class ResumeParserService {
             }),
           },
           {
-            pattern: /(\d{4})\s*[-–a]\s*(\d{4}|atual|presente)/gi,
+            // Formato: 2020 - 2023 ou 2020 - Atual
+            pattern: /(\d{4})\s*[-–]\s*(\d{4}|atual|presente)/gi,
             parse: (matches: RegExpMatchArray[]) => ({
               start: matches[0] ? `${matches[0][1]}-01-01` : null,
               end:
@@ -358,6 +391,14 @@ export class ResumeParserService {
                 !/atual|presente/i.test(matches[0][2])
                   ? `${matches[0][2]}-12-31`
                   : null,
+            }),
+          },
+          {
+            // Formato especial: "Atual - Atual" (cargo atual sem datas específicas)
+            pattern: /atual\s*[-–]\s*atual/gi,
+            parse: (matches: RegExpMatchArray[]) => ({
+              start: new Date().toISOString().split('T')[0], // Data atual
+              end: null, // Cargo atual, sem data fim
             }),
           },
         ];

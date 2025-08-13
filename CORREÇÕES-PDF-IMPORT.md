@@ -213,6 +213,107 @@ PDF parsing error: Error: ENOENT: no such file or directory...
 
 ---
 
+### 6. **Correção da Detecção de Experiência Profissional**
+**Arquivo**: `apps/backend/src/profile/resume-parser.service.ts` (linhas 264-269)
+
+**Problema**: 
+- Detectava incorretamente texto no meio do resumo como seção "EXPERIÊNCIA PROFISSIONAL"
+- Regex muito permissiva capturava qualquer linha com "profissional"
+
+**Solução**:
+```typescript
+// Antes:
+const expHeaderIdx = lines.findIndex((l) =>
+  /(experiência|profissional|trabalho|emprego|histórico\s+profissional|atuação)/i.test(l)
+);
+
+// Depois:
+const expHeaderIdx = lines.findIndex((l) =>
+  /^(experiência\s+profissional|histórico\s+profissional|atuação\s+profissional|trabalhos?\s+realizados?)$/i.test(
+    l.trim(),
+  ),
+);
+```
+
+**Resultado**: ✅ Agora detecta apenas cabeçalhos de seção, não texto do resumo
+
+### 7. **Aprimoramento da Detecção de Headline com Resumo Profissional**
+**Arquivo**: `apps/backend/src/profile/resume-parser.service.ts` (linhas 144-182)
+
+**Problema**: 
+- "RESUMO PROFISSIONAL" aparecia incorretamente como experiência de trabalho
+- Headline não capturava o texto completo do resumo profissional
+
+**Solução**:
+```typescript
+// Primeiro procura por "RESUMO PROFISSIONAL" ou texto após ele
+const resumoProfissionalIdx = lines.findIndex(l => 
+  /^(resumo\s+profissional|perfil\s+profissional|objetivo|perfil)/i.test(l)
+);
+
+let headlineCandidate = null;
+
+if (resumoProfissionalIdx >= 0) {
+  // Busca texto após "RESUMO PROFISSIONAL"
+  for (let i = resumoProfissionalIdx + 1; i < Math.min(resumoProfissionalIdx + 5, lines.length); i++) {
+    const line = lines[i];
+    if (line.length > 20 && line.length <= 300 && 
+        !/^(experiência|formação|habilidades|atual\s*-\s*atual)/i.test(line) &&
+        !/@/.test(line)) {
+      headlineCandidate = { line, index: i };
+      break;
+    }
+  }
+}
+```
+
+**Resultado**: ✅ Resumo profissional agora aparece corretamente como headline
+
+### 8. **Melhoria na Detecção de Datas "Atual - Atual"**
+**Arquivo**: `apps/backend/src/profile/resume-parser.service.ts` (linhas 396-403)
+
+**Problema**: 
+- Datas no formato "Atual - Atual" não eram reconhecidas
+- Campos de data ficavam vazios
+
+**Solução**:
+```typescript
+{
+  // Formato especial: "Atual - Atual" (cargo atual sem datas específicas)
+  pattern: /atual\s*[-–]\s*atual/gi,
+  parse: (matches: RegExpMatchArray[]) => ({
+    start: new Date().toISOString().split('T')[0], // Data atual
+    end: null, // Cargo atual, sem data fim
+  }),
+}
+```
+
+**Resultado**: ✅ Datas "Atual - Atual" agora são reconhecidas e preenchidas
+
+## 🧪 Testes Adicionais Realizados
+
+### Teste com Currículo da Caroline
+**Problemas específicos detectados e corrigidos:**
+```javascript
+// Input:
+"CAROLINE SOUZA GAZETA LINS
+Técnica de Enfermagem
+...
+RESUMO PROFISSIONAL
+Técnica de Enfermagem com formação completa e experiência prática em hospitais,
+UPAs e UBS. Profissional dedicada com habilidades em atendimento ao cliente...
+EXPERIÊNCIA PROFISSIONAL
+Hospital São Camilo
+Técnica de Enfermagem
+Janeiro 2020 - Atual"
+
+// Resultado após correções:
+✅ Nome: "CAROLINE SOUZA GAZETA LINS"
+✅ Headline: "Técnica de Enfermagem com formação completa e experiência prática em hospitais, UPAs e UBS..."
+✅ Experiência: "Hospital São Camilo" | "Técnica de Enfermagem" | "Janeiro 2020 - Atual"
+❌ Antes: "RESUMO PROFISSIONAL" aparecia como experiência
+```
+
 **Data das correções**: 13/08/2025  
 **Status**: ✅ RESOLVIDO  
 **Verificado por**: Testes em ambiente de desenvolvimento confirmaram funcionamento completo
