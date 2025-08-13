@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import HeaderClient from "@/components/header-client";
+import { ConditionalHeader } from "@/components/conditional-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import Script from "next/script";
 
@@ -46,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt" suppressHydrationWarning>
+    <html lang="pt" suppressHydrationWarning data-force-normal-scale="true">
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#111827" />
@@ -73,7 +74,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" storageKey="carreira-pro-theme">
           <div>
-            <HeaderClient />
+            <ConditionalHeader />
             {children}
           </div>
         </ThemeProvider>

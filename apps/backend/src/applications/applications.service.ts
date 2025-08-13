@@ -5,18 +5,53 @@ import { ApplicationEntity, ApplicationStatus } from './applications.entity';
 
 @Injectable()
 export class ApplicationsService {
-  constructor(@InjectRepository(ApplicationEntity) private readonly repo: Repository<ApplicationEntity>) {}
+  constructor(
+    @InjectRepository(ApplicationEntity)
+    private readonly repo: Repository<ApplicationEntity>,
+  ) {}
 
   list(userId: string, status?: ApplicationStatus) {
-    return this.repo.find({ where: { userId, ...(status ? { status } : {}) }, order: { updatedAt: 'DESC' } });
+    return this.repo.find({
+      where: { userId, ...(status ? { status } : {}) },
+      order: { updatedAt: 'DESC' },
+    });
   }
 
-  async create(userId: string, data: { company: string; title: string; jobUrl?: string | null; notes?: string | null; status?: ApplicationStatus; meta?: any }) {
-    const app = this.repo.create({ userId, company: data.company, title: data.title, jobUrl: data.jobUrl ?? null, notes: data.notes ?? null, status: data.status ?? 'saved', meta: data.meta ?? null });
+  async create(
+    userId: string,
+    data: {
+      company: string;
+      title: string;
+      jobUrl?: string | null;
+      notes?: string | null;
+      status?: ApplicationStatus;
+      meta?: any;
+    },
+  ) {
+    const app = this.repo.create({
+      userId,
+      company: data.company,
+      title: data.title,
+      jobUrl: data.jobUrl ?? null,
+      notes: data.notes ?? null,
+      status: data.status ?? 'saved',
+      meta: data.meta ?? null,
+    });
     return this.repo.save(app);
   }
 
-  async update(userId: string, id: string, data: Partial<{ company: string; title: string; jobUrl: string | null; notes: string | null; status: ApplicationStatus; meta: any }>) {
+  async update(
+    userId: string,
+    id: string,
+    data: Partial<{
+      company: string;
+      title: string;
+      jobUrl: string | null;
+      notes: string | null;
+      status: ApplicationStatus;
+      meta: any;
+    }>,
+  ) {
     const app = await this.repo.findOne({ where: { id, userId } });
     if (!app) throw new NotFoundException('Aplicação não encontrada');
     Object.assign(app, data);
@@ -49,5 +84,3 @@ export class ApplicationsService {
     return { ...base, total };
   }
 }
-
-

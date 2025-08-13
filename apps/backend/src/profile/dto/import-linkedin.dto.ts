@@ -1,4 +1,10 @@
-import { IsBoolean, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class ImportLinkedinDto {
@@ -10,12 +16,13 @@ export class ImportLinkedinDto {
     if (!v) return v;
     return /^https?:\/\//i.test(v) ? v : `https://${v}`;
   })
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, { message: 'url deve ser uma URL http/https' })
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'url deve ser uma URL http/https' },
+  )
   url!: string;
 
   @IsOptional()
   @IsBoolean()
   overwrite?: boolean;
 }
-
-

@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { DocumentEntity } from './document.entity';
 
 @Entity('document_versions')
@@ -15,5 +21,3 @@ export class DocumentVersionEntity {
   @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 }
-
-

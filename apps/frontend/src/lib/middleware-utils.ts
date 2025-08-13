@@ -191,7 +191,14 @@ export function createRedirectResponse(
   destination: string,
   config: AuthMiddlewareConfig = DEFAULT_MIDDLEWARE_CONFIG
 ): NextResponse {
-  const url = new URL(destination, request.url);
+  let url: URL;
+  try {
+    url = new URL(destination, request.url);
+  } catch {
+    // Fallback seguro: usa loginPath absoluto baseado na request
+    const base = new URL(request.url);
+    url = new URL(config.loginPath || '/login', base.origin);
+  }
   
   // Preserve intended destination for protected routes
   if (isProtectedRoute(request.nextUrl.pathname, config)) {

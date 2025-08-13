@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApplicationsService } from './applications.service';
 import { IsIn, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
@@ -6,28 +18,40 @@ import type { ApplicationStatus } from './applications.entity';
 import type { Response } from 'express';
 
 class CreateApplicationDto {
-  @IsString() @MaxLength(255)
+  @IsString()
+  @MaxLength(255)
   company!: string;
-  @IsString() @MaxLength(255)
+  @IsString()
+  @MaxLength(255)
   title!: string;
-  @IsOptional() @IsUrl()
+  @IsOptional()
+  @IsUrl()
   jobUrl?: string;
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   notes?: string;
-  @IsOptional() @IsIn(['saved','applied','interview','offer','rejected'])
+  @IsOptional()
+  @IsIn(['saved', 'applied', 'interview', 'offer', 'rejected'])
   status?: ApplicationStatus;
 }
 
 class UpdateApplicationDto {
-  @IsOptional() @IsString() @MaxLength(255)
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
   company?: string;
-  @IsOptional() @IsString() @MaxLength(255)
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
   title?: string;
-  @IsOptional() @IsUrl()
+  @IsOptional()
+  @IsUrl()
   jobUrl?: string;
-  @IsOptional() @IsString()
+  @IsOptional()
+  @IsString()
   notes?: string;
-  @IsOptional() @IsIn(['saved','applied','interview','offer','rejected'])
+  @IsOptional()
+  @IsIn(['saved', 'applied', 'interview', 'offer', 'rejected'])
   status?: ApplicationStatus;
 }
 
@@ -47,7 +71,11 @@ export class ApplicationsController {
   }
 
   @Put(':id')
-  update(@Req() req: any, @Param('id') id: string, @Body() body: UpdateApplicationDto) {
+  update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateApplicationDto,
+  ) {
     return this.apps.update(req.user.sub, id, body);
   }
 
@@ -62,18 +90,51 @@ export class ApplicationsController {
   }
 
   @Get('export.csv')
-  async exportCsv(@Req() req: any, @Res() res: Response, @Query('status') status?: ApplicationStatus) {
+  async exportCsv(
+    @Req() req: any,
+    @Res() res: Response,
+    @Query('status') status?: ApplicationStatus,
+  ) {
     const list = await this.apps.list(req.user.sub, status);
-    const header = ['company', 'title', 'jobUrl', 'status', 'createdAt', 'updatedAt'];
-    const rows = list.map(i => [i.company, i.title, i.jobUrl ?? '', i.status, i.createdAt.toISOString(), i.updatedAt.toISOString()]);
-    const csv = [header.join(','), ...rows.map(r => r.map(v => String(v).replaceAll('"', '""')).map(v => (/[,\n"]/.test(v) ? `"${v}"` : v)).join(','))].join('\n');
+    const header = [
+      'company',
+      'title',
+      'jobUrl',
+      'status',
+      'createdAt',
+      'updatedAt',
+    ];
+    const rows = list.map((i) => [
+      i.company,
+      i.title,
+      i.jobUrl ?? '',
+      i.status,
+      i.createdAt.toISOString(),
+      i.updatedAt.toISOString(),
+    ]);
+    const csv = [
+      header.join(','),
+      ...rows.map((r) =>
+        r
+          .map((v) => String(v).replaceAll('"', '""'))
+          .map((v) => (/[,\n"]/.test(v) ? `"${v}"` : v))
+          .join(','),
+      ),
+    ].join('\n');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="applications.csv"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="applications.csv"',
+    );
     res.end('\uFEFF' + csv);
   }
 
   @Get('export.pdf')
-  async exportPdf(@Req() req: any, @Res() res: Response, @Query('status') status?: ApplicationStatus) {
+  async exportPdf(
+    @Req() req: any,
+    @Res() res: Response,
+    @Query('status') status?: ApplicationStatus,
+  ) {
     const list = await this.apps.list(req.user.sub, status);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'inline; filename="applications.pdf"');
@@ -93,7 +154,12 @@ export class ApplicationsController {
       pdf.text(values[3] ?? '', { width: colWidths[3] });
     }
     drawRow(header, true);
-    pdf.moveTo(pdf.x, pdf.y).lineTo(550, pdf.y).strokeColor('#aaa').stroke().moveDown(0.3);
+    pdf
+      .moveTo(pdf.x, pdf.y)
+      .lineTo(550, pdf.y)
+      .strokeColor('#aaa')
+      .stroke()
+      .moveDown(0.3);
     for (const i of list) {
       drawRow([i.company, i.title, i.status, i.jobUrl ?? '']);
       pdf.moveDown(0.2);
@@ -101,5 +167,3 @@ export class ApplicationsController {
     pdf.end();
   }
 }
-
-

@@ -43,5 +43,3 @@ export class CoverLetterEntity {
   @UpdateDateColumn()
   updatedAt!: Date;
 }
-
-

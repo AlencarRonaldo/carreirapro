@@ -5,6 +5,9 @@ export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  name?: string | null;
+
   @Index('idx_users_email_unique', { unique: true })
   @Column({ type: 'varchar', length: 255 })
   email!: string;
@@ -26,5 +29,3 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   stripeSubscriptionId?: string | null;
 }
-
-

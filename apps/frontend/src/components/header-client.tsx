@@ -61,7 +61,7 @@ export default function HeaderClient() {
   const onLoginPage = pathname === "/login"
 
   const navItems = [
-    { href: "/", label: "Início" },
+    { href: "/landing", label: "Início" },
     { href: "/profile", label: "Perfil" },
     { href: "/documents", label: "Currículos" },
     { href: "/documents/templates", label: "Templates" },
@@ -95,7 +95,7 @@ export default function HeaderClient() {
       <div className="mx-auto max-w-5xl p-4 flex items-center justify-between">
         {/* Logo/Brand */}
         <div className="flex items-center">
-          <Link href="/" className="font-bold text-lg text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm">
+          <Link href="/landing" className="font-bold text-lg text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm">
             Carreira Pro
           </Link>
         </div>

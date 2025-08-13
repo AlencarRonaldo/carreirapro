@@ -12,14 +12,26 @@ function currentPeriod(): string {
 
 @Injectable()
 export class UsageService {
-  constructor(@InjectRepository(UsageCounterEntity) private readonly repo: Repository<UsageCounterEntity>) {}
+  constructor(
+    @InjectRepository(UsageCounterEntity)
+    private readonly repo: Repository<UsageCounterEntity>,
+  ) {}
 
-  async getCount(userId: string, metric: UsageCounterEntity['metric'], period = currentPeriod()): Promise<number> {
+  async getCount(
+    userId: string,
+    metric: UsageCounterEntity['metric'],
+    period = currentPeriod(),
+  ): Promise<number> {
     const row = await this.repo.findOne({ where: { userId, metric, period } });
     return row?.count ?? 0;
   }
 
-  async increment(userId: string, metric: UsageCounterEntity['metric'], delta = 1, period = currentPeriod()): Promise<number> {
+  async increment(
+    userId: string,
+    metric: UsageCounterEntity['metric'],
+    delta = 1,
+    period = currentPeriod(),
+  ): Promise<number> {
     let row = await this.repo.findOne({ where: { userId, metric, period } });
     if (!row) row = this.repo.create({ userId, metric, period, count: 0 });
     row.count += delta;
@@ -27,5 +39,3 @@ export class UsageService {
     return row.count;
   }
 }
-
-

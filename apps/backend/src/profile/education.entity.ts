@@ -21,5 +21,3 @@ export class EducationEntity {
   @ManyToOne(() => ProfileEntity, (p) => p.education, { onDelete: 'CASCADE' })
   profile!: ProfileEntity;
 }
-
-

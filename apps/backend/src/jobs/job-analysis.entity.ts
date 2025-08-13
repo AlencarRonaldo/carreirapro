@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserEntity } from '../auth/user.entity';
 
 @Entity('job_analyses')
@@ -33,5 +39,3 @@ export class JobAnalysisEntity {
   @CreateDateColumn()
   createdAt!: Date;
 }
-
-

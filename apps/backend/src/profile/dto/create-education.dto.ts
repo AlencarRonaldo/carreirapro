@@ -17,5 +17,3 @@ export class CreateEducationDto {
   @IsDateString()
   endDate?: string;
 }
-
-

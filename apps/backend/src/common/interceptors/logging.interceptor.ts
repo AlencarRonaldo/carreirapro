@@ -16,13 +16,9 @@ export class LoggingInterceptor implements NestInterceptor {
         const ms = Date.now() - start;
         const method = req?.method ?? '-';
         const url = req?.url ?? '-';
-        // eslint-disable-next-line no-console
+
         console.log(`[HTTP] ${method} ${url} ${ms}ms`);
-      })
+      }),
     );
   }
 }
-
-
-
-

@@ -85,7 +85,7 @@ export const linkedInImportSchema = z.object({
   url: z.string().url("URL inválida").refine((url) => {
     return url.includes("linkedin.com")
   }, "URL deve ser do LinkedIn"),
-  overwrite: z.boolean().optional().default(false),
+  overwrite: z.boolean().optional().default(true),
 })
 
 // Form step validation

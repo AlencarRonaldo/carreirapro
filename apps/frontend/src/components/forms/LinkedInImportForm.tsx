@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -20,10 +20,18 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { linkedInImportSchema, type LinkedInImportData } from "@/lib/validations/profile"
 import { useProfile } from "@/hooks/useProfile"
-import { Linkedin, AlertTriangle, CheckCircle, Loader2, Info } from "lucide-react"
+import { Linkedin, AlertTriangle, CheckCircle, Loader2, Info, Upload } from "lucide-react"
 
 interface LinkedInImportFormProps {
   onSuccess?: () => void
@@ -31,15 +39,18 @@ interface LinkedInImportFormProps {
 }
 
 export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImportFormProps) {
-  const { importFromLinkedIn, loading } = useProfile()
+  const { importFromLinkedIn, importFromResume, loading } = useProfile()
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [importedData, setImportedData] = useState<any>(null)
+  const [lastImportResult, setLastImportResult] = useState<any>(null)
+  const [showReviewDialog, setShowReviewDialog] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const form = useForm<LinkedInImportData>({
     resolver: zodResolver(linkedInImportSchema),
     defaultValues: {
       url: "",
-      overwrite: false,
+      overwrite: true,
     },
   })
 
@@ -47,9 +58,43 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
     try {
       setImportStatus('idle')
       const result = await importFromLinkedIn(data)
+      console.log('🎯 LinkedInImportForm - Import result:', result)
+      // CORREÇÃO: Definir importedData antes de usar no dialog
       setImportedData(result)
+      setLastImportResult(result)
+      console.log('🎯 LinkedInImportForm - importedData state set to:', result)
+      
+      // Persistir rascunho com dados importados para o formulário de Informações Pessoais
+      try {
+        const draft = {
+          fullName: result?.fullName || "",
+          headline: result?.headline || "",
+          locationCity: result?.locationCity || "",
+          locationState: result?.locationState || "",
+          locationCountry: result?.locationCountry || "",
+          linkedin: result?.linkedin || "",
+          github: result?.github || "",
+          website: result?.website || "",
+          email: result?.email || "",
+          phone: result?.phone || "",
+          maritalStatus: (result as any)?.maritalStatus || "",
+        }
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('profile_info_draft', JSON.stringify(draft))
+          // Dispara um evento extra (além do do hook) para garantir sincronização cruzada
+          window.dispatchEvent(new CustomEvent('profile-updated', { detail: { profile: result } }))
+        }
+      } catch {}
+      
       setImportStatus('success')
       form.reset()
+      
+      console.log('🎯 LinkedInImportForm - About to show dialog, result from import:', result)
+      console.log('🎯 LinkedInImportForm - Setting showReviewDialog to true')
+      
+      // Use result diretamente para garantir que temos os dados
+      setShowReviewDialog(true)
+      console.log('🎯 LinkedInImportForm - showReviewDialog state updated')
       onSuccess?.()
       onImportComplete?.()
     } catch (error) {
@@ -110,7 +155,7 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
             <p>2. Copie a URL do perfil da barra de endereços</p>
             <p>3. Cole a URL no campo abaixo e clique em Importar</p>
             <p className="text-sm text-muted-foreground mt-2">
-              <strong>Nota:</strong> Utilizamos Proxycurl quando disponível para extrair dados públicos do LinkedIn
+              <strong>Nota:</strong> Utilizamos Apify para extrair dados públicos do LinkedIn
             </p>
           </AlertDescription>
         </Alert>
@@ -169,7 +214,7 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
                       Sobrescrever dados existentes
                     </FormLabel>
                     <FormDescription>
-                      Se marcado, os dados importados substituirão as informações já cadastradas
+                      Se desmarcado, apenas campos vazios serão preenchidos. Se marcado, todos os dados serão substituídos pelos do LinkedIn.
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -196,7 +241,7 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
           </form>
         </Form>
 
-        {/* Example URLs */}
+        {/* Example URLs (moved up above resume upload) */}
         <div className="space-y-2">
           <h4 className="text-sm font-medium">Exemplos de URLs válidas:</h4>
           <div className="text-xs text-muted-foreground space-y-1">
@@ -207,6 +252,61 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
             ))}
           </div>
         </div>
+
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center" aria-hidden>
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-background px-2 text-muted-foreground">ou</span>
+          </div>
+        </div>
+
+        {/* Resume Upload */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium">Importar currículo (PDF/DOCX)</h4>
+          <p className="text-xs text-muted-foreground">Faça upload do seu currículo para preenchermos automaticamente seus dados básicos.</p>
+          <div className="rounded-lg border bg-background p-4 flex items-center justify-between gap-4 shadow-sm">
+            <div className="text-xs text-muted-foreground">
+              Selecione um arquivo PDF ou DOCX com seu currículo.
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0]
+                  if (!f) return
+                  try {
+                    const result = await importFromResume(f, true)
+                    console.log('🎯 Resume Import - Result:', result)
+                    setImportedData(result)
+                    setLastImportResult(result)
+                    setImportStatus('success')
+                    setShowReviewDialog(true)
+                    console.log('🎯 Resume Import - Dialog should show now')
+                  } catch (error) {
+                    console.error('🎯 Resume Import - Error:', error)
+                  }
+                }}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loading}
+                className="shadow-md hover:shadow-lg transition-transform hover:-translate-y-[1px] active:translate-y-0"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Enviar currículo
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        
 
         {/* Success Message */}
         {importStatus === 'success' && importedData && (
@@ -277,6 +377,119 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
             <li>• Em caso de erro, você pode preencher os dados manualmente</li>
           </ul>
         </div>
+        {/* Enhanced Review Dialog */}
+        {console.log('🎯 LinkedInImportForm - Dialog render:', { showReviewDialog, importedData, lastImportResult })}
+        <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Importação do LinkedIn Concluída!
+              </DialogTitle>
+              <DialogDescription>
+                Seus dados foram importados com sucesso. Revise as informações abaixo e complete os campos que estão faltando para ter um perfil completo.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Imported Data Summary - usar lastImportResult como fallback */}
+              <div className="rounded-lg border bg-green-50 p-4">
+                <h4 className="font-medium text-green-800 mb-3">✅ Dados Importados com Sucesso:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  {(importedData?.fullName || lastImportResult?.fullName) && (
+                    <div>
+                      <strong>Nome:</strong> {importedData?.fullName || lastImportResult?.fullName}
+                    </div>
+                  )}
+                  {(importedData?.headline || lastImportResult?.headline) && (
+                    <div>
+                      <strong>Título Profissional:</strong> {importedData?.headline || lastImportResult?.headline}
+                    </div>
+                  )}
+                  {(importedData?.linkedin || lastImportResult?.linkedin) && (
+                    <div>
+                      <strong>LinkedIn:</strong> {importedData?.linkedin || lastImportResult?.linkedin}
+                    </div>
+                  )}
+                  {(importedData?.locationCity || lastImportResult?.locationCity) && (
+                    <div>
+                      <strong>Localização:</strong> {importedData?.locationCity || lastImportResult?.locationCity}
+                      {(importedData?.locationState || lastImportResult?.locationState) && `, ${importedData?.locationState || lastImportResult?.locationState}`}
+                      {(importedData?.locationCountry || lastImportResult?.locationCountry) && `, ${importedData?.locationCountry || lastImportResult?.locationCountry}`}
+                    </div>
+                  )}
+                  {((importedData?.experiences && importedData.experiences.length > 0) || (lastImportResult?.experiences && lastImportResult.experiences.length > 0)) && (
+                    <div>
+                      <strong>Experiências:</strong> {(importedData?.experiences || lastImportResult?.experiences)?.length || 0} experiência(s) profissional(is)
+                    </div>
+                  )}
+                  {((importedData?.education && importedData.education.length > 0) || (lastImportResult?.education && lastImportResult.education.length > 0)) && (
+                    <div>
+                      <strong>Formação:</strong> {(importedData?.education || lastImportResult?.education)?.length || 0} curso(s) acadêmico(s)
+                    </div>
+                  )}
+                  {((importedData?.skills && importedData.skills.length > 0) || (lastImportResult?.skills && lastImportResult.skills.length > 0)) && (
+                    <div>
+                      <strong>Competências:</strong> {(importedData?.skills || lastImportResult?.skills)?.length || 0} habilidade(s) técnica(s)
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Required */}
+              <div className="rounded-lg border bg-yellow-50 p-4">
+                <h4 className="font-medium text-yellow-800 mb-3">⚠️ Complete seu Perfil:</h4>
+                <p className="text-sm text-yellow-700 mb-3">
+                  Para ter um currículo profissional completo, verifique e complete as seguintes informações:
+                </p>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  <li>• <strong>Email e telefone</strong> para contato</li>
+                  <li>• <strong>Endereço completo</strong> (cidade, estado, país)</li>
+                  <li>• <strong>Links adicionais</strong> (GitHub, portfólio, website)</li>
+                  <li>• <strong>Objetivo profissional</strong> personalizado</li>
+                  <li>• <strong>Datas das experiências e educação</strong></li>
+                  <li>• <strong>Descrições detalhadas</strong> das suas responsabilidades</li>
+                </ul>
+              </div>
+
+              {/* Next Steps */}
+              <div className="rounded-lg border bg-blue-50 p-4">
+                <h4 className="font-medium text-blue-800 mb-3">📝 Próximos Passos:</h4>
+                <div className="text-sm text-blue-700 space-y-2">
+                  <p>1. <strong>Revise as Informações Pessoais</strong> na primeira aba</p>
+                  <p>2. <strong>Confira suas Experiências</strong> e adicione detalhes se necessário</p>
+                  <p>3. <strong>Verifique sua Formação Acadêmica</strong> e cursos</p>
+                  <p>4. <strong>Confirme suas Competências</strong> e adicione outras relevantes</p>
+                  <p>5. <strong>Gere seu currículo</strong> quando estiver satisfeito</p>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="flex gap-2">
+              <Button 
+                onClick={() => setShowReviewDialog(false)} 
+                variant="outline"
+                className="flex-1"
+              >
+                Revisar Depois
+              </Button>
+              <Button 
+                onClick={() => { 
+                  setShowReviewDialog(false); 
+                  if (typeof window !== 'undefined') {
+                    // Scroll to top and highlight the first tab
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Trigger a custom event to switch to personal info tab
+                    window.dispatchEvent(new CustomEvent('switch-to-personal-info'));
+                  }
+                }}
+                className="flex-1"
+              >
+                Revisar Informações Agora
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   )

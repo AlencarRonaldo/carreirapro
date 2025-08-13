@@ -13,10 +13,18 @@ import { RequireProPlanGuard } from '../common/guards/plan.guard';
 import { UsageService } from '../common/usage/usage.service';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), HttpModule, ProfileModule, DocumentsModule, TypeOrmModule.forFeature([JobAnalysisEntity, UsageCounterEntity, UserEntity])],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    HttpModule,
+    ProfileModule,
+    DocumentsModule,
+    TypeOrmModule.forFeature([
+      JobAnalysisEntity,
+      UsageCounterEntity,
+      UserEntity,
+    ]),
+  ],
   controllers: [JobsController],
   providers: [JobsService, UsageService, RequireProPlanGuard],
 })
 export class JobsModule {}
-
-

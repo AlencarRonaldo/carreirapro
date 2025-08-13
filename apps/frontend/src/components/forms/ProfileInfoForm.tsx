@@ -27,7 +27,7 @@ interface ProfileInfoFormProps {
 }
 
 export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInfoFormProps) {
-  const { profile, loading, updateProfile } = useProfile()
+  const { profile, loading, updateProfile, loadProfile } = useProfile()
   const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm<ProfileFormData>({
@@ -43,6 +43,7 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
       website: "",
       email: "",
       phone: "",
+      maritalStatus: "",
     },
   })
 
@@ -79,38 +80,73 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
     }
   }, [forceSave])
 
-  // Load profile data when available (com proteção contra perda de dados)
+  // Load profile data when available - SEMPRE carrega quando o perfil mudar
   useEffect(() => {
+    console.log('🔍 ProfileInfoForm - Profile changed:', profile)
+    console.log('🔍 ProfileInfoForm - Profile ID:', profile?.id)
+    console.log('🔍 ProfileInfoForm - Profile fullName:', profile?.fullName)
     if (profile) {
-      // Só faz reset se não houver dados no formulário ou se forem dados vazios
-      const currentData = watch()
-      const hasCurrentData = Object.values(currentData).some(val => val && val.toString().trim())
-      
-      // Se não houver dados atuais ou se for a primeira carga, carrega do perfil
-      if (!hasCurrentData) {
-        reset({
-          fullName: profile.fullName || "",
-          headline: profile.headline || "",
-          locationCity: profile.locationCity || "",
-          locationState: profile.locationState || "",
-          locationCountry: profile.locationCountry || "",
-          linkedin: profile.linkedin || "",
-          github: profile.github || "",
-          website: profile.website || "",
-          email: profile.email || "",
-          phone: profile.phone || "",
-        })
+      const newData = {
+        fullName: profile.fullName || "",
+        headline: profile.headline || "",
+        locationCity: profile.locationCity || "",
+        locationState: profile.locationState || "",
+        locationCountry: profile.locationCountry || "",
+        linkedin: profile.linkedin || "",
+        github: profile.github || "",
+        website: profile.website || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        maritalStatus: (profile as any).maritalStatus || "",
       }
+      console.log('🔍 ProfileInfoForm - Always resetting form with profile data:', newData)
+      console.log('🔍 ProfileInfoForm - Before reset - current form values:', form.getValues())
+      
+      // Use timeout to ensure state updates are complete
+      setTimeout(() => {
+        reset(newData)
+        console.log('🔍 ProfileInfoForm - After timeout reset - new form values:', form.getValues())
+      }, 50)
+    } else {
+      console.log('🔍 ProfileInfoForm - No profile data, not resetting form')
     }
-  }, [profile, reset, watch])
+  }, [profile, reset])
+
+  // Garante que o formulário sempre tenha os dados mais recentes do servidor
+  // mesmo se o evento de atualização ocorrer antes do componente montar
+  useEffect(() => {
+    // Carrega o perfil ao montar o formulário e já aplica no form
+    loadProfile()
+      .then((p) => {
+        if (p) {
+          const newData = {
+            fullName: p.fullName || "",
+            headline: p.headline || "",
+            locationCity: p.locationCity || "",
+            locationState: p.locationState || "",
+            locationCountry: p.locationCountry || "",
+            linkedin: p.linkedin || "",
+            github: p.github || "",
+            website: p.website || "",
+            email: p.email || "",
+            phone: p.phone || "",
+            maritalStatus: (p as any).maritalStatus || "",
+          }
+          clearDraft()
+          reset(newData)
+        }
+      })
+      .catch(() => {})
+  }, [loadProfile, reset, clearDraft])
 
   // Atualiza form em tempo real quando o perfil for salvo/importado em outra aba/step
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail as any
       const p = detail?.profile
+      console.log('🔍 ProfileInfoForm - Profile updated event received:', p)
       if (p) {
-        reset({
+        const newData = {
           fullName: p.fullName || "",
           headline: p.headline || "",
           locationCity: p.locationCity || "",
@@ -121,7 +157,11 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
           website: p.website || "",
           email: p.email || "",
           phone: p.phone || "",
-        })
+          maritalStatus: (p as any).maritalStatus || "",
+        }
+        console.log('🔍 ProfileInfoForm - Forcing reset with updated data:', newData)
+        clearDraft()
+        reset(newData)
       }
     }
     if (typeof window !== 'undefined') {
@@ -135,6 +175,14 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
     const draft = loadDraft()
     if (draft && !profile) {
       reset(draft)
+    } else if (!profile && typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('profile_info_draft')
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          reset(parsed)
+        }
+      } catch {}
     }
   }, [loadDraft, reset, profile])
 
@@ -286,7 +334,7 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
                 <h3 className="text-lg font-medium">Contato</h3>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -328,6 +376,22 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
                     </FormItem>
                   )}
                 />
+              <FormField
+                control={form.control}
+                name="maritalStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado civil</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Solteiro(a), Casado(a), ..." 
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               </div>
             </div>
 

@@ -11,5 +11,3 @@ import { UserEntity } from '../auth/user.entity';
   providers: [ApplicationsService],
 })
 export class ApplicationsModule {}
-
-

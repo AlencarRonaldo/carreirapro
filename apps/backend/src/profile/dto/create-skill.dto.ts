@@ -10,5 +10,3 @@ export class CreateSkillDto {
   @Max(5)
   level!: number;
 }
-
-

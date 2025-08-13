@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsUrl, MaxLength, ValidateIf } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+  ValidateIf,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateProfileDto {
@@ -36,8 +42,13 @@ export class UpdateProfileDto {
     if (v.length === 0) return undefined;
     return /^https?:\/\//i.test(v) ? v : `https://${v}`;
   })
-  @ValidateIf((o) => typeof o.linkedin === 'string' && o.linkedin.trim().length > 0)
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, { message: 'linkedin deve ser uma URL http/https' })
+  @ValidateIf(
+    (o) => typeof o.linkedin === 'string' && o.linkedin.trim().length > 0,
+  )
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'linkedin deve ser uma URL http/https' },
+  )
   linkedin?: string;
 
   @IsOptional()
@@ -50,7 +61,10 @@ export class UpdateProfileDto {
     return /^https?:\/\//i.test(v) ? v : `https://${v}`;
   })
   @ValidateIf((o) => typeof o.github === 'string' && o.github.trim().length > 0)
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, { message: 'github deve ser uma URL http/https' })
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'github deve ser uma URL http/https' },
+  )
   github?: string;
 
   @IsOptional()
@@ -62,8 +76,13 @@ export class UpdateProfileDto {
     if (v.length === 0) return undefined;
     return /^https?:\/\//i.test(v) ? v : `https://${v}`;
   })
-  @ValidateIf((o) => typeof o.website === 'string' && o.website.trim().length > 0)
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true }, { message: 'website deve ser uma URL http/https' })
+  @ValidateIf(
+    (o) => typeof o.website === 'string' && o.website.trim().length > 0,
+  )
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'website deve ser uma URL http/https' },
+  )
   website?: string;
 
   @IsOptional()
@@ -81,6 +100,3 @@ export class UpdateProfileDto {
   @MaxLength(100)
   maritalStatus?: string;
 }
-
-
-

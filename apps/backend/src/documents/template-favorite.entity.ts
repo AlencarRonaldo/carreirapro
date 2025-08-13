@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { UserEntity } from '../auth/user.entity';
 
 @Entity('template_favorites')
@@ -19,5 +26,3 @@ export class TemplateFavoriteEntity {
   @CreateDateColumn()
   createdAt!: Date;
 }
-
-

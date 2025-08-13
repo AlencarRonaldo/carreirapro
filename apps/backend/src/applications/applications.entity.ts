@@ -1,7 +1,19 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { UserEntity } from '../auth/user.entity';
 
-export type ApplicationStatus = 'saved' | 'applied' | 'interview' | 'offer' | 'rejected';
+export type ApplicationStatus =
+  | 'saved'
+  | 'applied'
+  | 'interview'
+  | 'offer'
+  | 'rejected';
 
 @Entity('applications')
 export class ApplicationEntity {
@@ -38,5 +50,3 @@ export class ApplicationEntity {
   @UpdateDateColumn()
   updatedAt!: Date;
 }
-
-

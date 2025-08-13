@@ -26,41 +26,42 @@ import {
   AlertCircle
 } from "lucide-react"
 
+// Ordem atualizada: LinkedIn primeiro para agilizar o preenchimento
 const STEPS = [
   {
     id: 1,
+    title: "Importar (LinkedIn/PDF)",
+    description: "Importação automática por LinkedIn ou currículo",
+    icon: Linkedin,
+    component: "linkedin"
+  },
+  {
+    id: 2,
     title: "Informações Pessoais",
     description: "Dados básicos do perfil",
     icon: User,
     component: "profile"
   },
   {
-    id: 2,
+    id: 3,
     title: "Experiência Profissional", 
     description: "Histórico de trabalho",
     icon: Building2,
     component: "experience"
   },
   {
-    id: 3,
-    title: "Educação",
+    id: 4,
+    title: "Escolaridade",
     description: "Formação acadêmica",
     icon: GraduationCap,
     component: "education"
   },
   {
-    id: 4,
+    id: 5,
     title: "Skills & Competências",
     description: "Habilidades técnicas",
     icon: Zap,
     component: "skills"
-  },
-  {
-    id: 5,
-    title: "Importar do LinkedIn",
-    description: "Importação automática",
-    icon: Linkedin,
-    component: "linkedin"
   }
 ] as const
 
@@ -174,26 +175,48 @@ export function ProfileWizard({
   const [stepCompletion, recheckCompletion] = useStepCompletion(profile, experiences, education, skills)
   // Rechecar conclusão quando o perfil for atualizado em qualquer step
   useEffect(() => {
-    const refreshAndRecheck = async () => {
-      await Promise.all([
-        loadProfile().catch(() => {}),
-        loadExperiences().catch(() => {}),
-        loadEducation().catch(() => {}),
-        loadSkills().catch(() => {}),
-      ])
+    const handleUpdate = () => {
+      console.log('📄 ProfileWizard - Profile updated, rechecking completion...')
+      // Apenas recheck, não recarrega dados (evita race condition)
       recheckCompletion()
     }
-    const handler = () => { void refreshAndRecheck() }
+    
+    const handleImportUpdate = async () => {
+      console.log('📄 ProfileWizard - Import detected, refreshing all data...')
+      // Só recarrega após importação para sincronizar
+      try {
+        await Promise.all([
+          loadProfile().catch(() => {}),
+          loadExperiences().catch(() => {}),
+          loadEducation().catch(() => {}),
+          loadSkills().catch(() => {}),
+        ])
+        recheckCompletion()
+      } catch (error) {
+        console.error('📄 ProfileWizard - Error refreshing after import:', error)
+      }
+    }
+    
     if (typeof window !== 'undefined') {
-      window.addEventListener('profile-updated', handler)
-      window.addEventListener('experiences-updated', handler)
-      window.addEventListener('education-updated', handler)
-      window.addEventListener('skills-updated', handler)
+      // Eventos normais apenas fazem recheck
+      window.addEventListener('profile-updated', handleUpdate)
+      window.addEventListener('experiences-updated', handleUpdate)
+      window.addEventListener('education-updated', handleUpdate)
+      window.addEventListener('skills-updated', handleUpdate)
+      
+      // Eventos de reload (após importação) fazem refresh completo
+      window.addEventListener('experiences-reload', handleImportUpdate)
+      window.addEventListener('education-reload', handleImportUpdate)
+      window.addEventListener('skills-reload', handleImportUpdate)
+      
       return () => {
-        window.removeEventListener('profile-updated', handler)
-        window.removeEventListener('experiences-updated', handler)
-        window.removeEventListener('education-updated', handler)
-        window.removeEventListener('skills-updated', handler)
+        window.removeEventListener('profile-updated', handleUpdate)
+        window.removeEventListener('experiences-updated', handleUpdate)
+        window.removeEventListener('education-updated', handleUpdate)
+        window.removeEventListener('skills-updated', handleUpdate)
+        window.removeEventListener('experiences-reload', handleImportUpdate)
+        window.removeEventListener('education-reload', handleImportUpdate)
+        window.removeEventListener('skills-reload', handleImportUpdate)
       }
     }
   }, [recheckCompletion, loadProfile, loadExperiences, loadEducation, loadSkills])
@@ -210,13 +233,23 @@ export function ProfileWizard({
 
   // Update completed steps based on data completion
   useEffect(() => {
+    const byComponent = (c: string) => STEPS.find(s => s.component === c)?.id
     const newCompleted: number[] = []
-    if (stepCompletion.profile) newCompleted.push(1)
-    if (stepCompletion.experience) newCompleted.push(2)
-    if (stepCompletion.education) newCompleted.push(3)
-    if (stepCompletion.skills) newCompleted.push(4)
-    if (stepCompletion.linkedin) newCompleted.push(5)
-    
+    if (stepCompletion.linkedin) {
+      const id = byComponent('linkedin'); if (id) newCompleted.push(id)
+    }
+    if (stepCompletion.profile) {
+      const id = byComponent('profile'); if (id) newCompleted.push(id)
+    }
+    if (stepCompletion.experience) {
+      const id = byComponent('experience'); if (id) newCompleted.push(id)
+    }
+    if (stepCompletion.education) {
+      const id = byComponent('education'); if (id) newCompleted.push(id)
+    }
+    if (stepCompletion.skills) {
+      const id = byComponent('skills'); if (id) newCompleted.push(id)
+    }
     setCompletedSteps(newCompleted)
   }, [stepCompletion])
 
@@ -309,7 +342,9 @@ export function ProfileWizard({
       loadSkills().catch(() => {}),
     ])
     recheckCompletion()
-    setCurrentStep(1)
+    // Após importar, vai para a etapa de Informações Pessoais
+    const profileStepId = STEPS.find(s => s.component === 'profile')?.id ?? 2
+    setCurrentStep(profileStepId)
   }
 
   const renderStepContent = () => {

@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SkillService } from './skill.service';
 import { CreateSkillDto } from './dto/create-skill.dto';
@@ -20,7 +30,11 @@ export class SkillController {
   }
 
   @Put(':id')
-  update(@Req() req: any, @Param('id') id: string, @Body() body: UpdateSkillDto) {
+  update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateSkillDto,
+  ) {
     return this.service.update(req.user.sub, id, body);
   }
 
@@ -29,5 +43,3 @@ export class SkillController {
     return this.service.remove(req.user.sub, id);
   }
 }
-
-

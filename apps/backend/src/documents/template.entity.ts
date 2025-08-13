@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('templates')
 export class TemplateEntity {
@@ -28,5 +35,3 @@ export class TemplateEntity {
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
 }
-
-

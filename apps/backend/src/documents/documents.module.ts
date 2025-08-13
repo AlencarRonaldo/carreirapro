@@ -10,11 +10,18 @@ import { ProfileModule } from '../profile/profile.module';
 import { UserEntity } from '../auth/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DocumentEntity, DocumentVersionEntity, TemplateEntity, TemplateFavoriteEntity, UserEntity]), ProfileModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      DocumentEntity,
+      DocumentVersionEntity,
+      TemplateEntity,
+      TemplateFavoriteEntity,
+      UserEntity,
+    ]),
+    ProfileModule,
+  ],
   providers: [DocumentsService],
   controllers: [DocumentsController],
   exports: [DocumentsService],
 })
 export class DocumentsModule {}
-
-

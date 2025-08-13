@@ -24,5 +24,3 @@ export class ExperienceEntity {
   @ManyToOne(() => ProfileEntity, (p) => p.experiences, { onDelete: 'CASCADE' })
   profile!: ProfileEntity;
 }
-
-

@@ -7,7 +7,3 @@ export class HealthController {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
 }
-
-
-
-

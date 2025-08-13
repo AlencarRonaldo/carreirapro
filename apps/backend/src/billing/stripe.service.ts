@@ -4,9 +4,10 @@ import Stripe from 'stripe';
 @Injectable()
 export class StripeService {
   private stripe: Stripe | null = null;
-  private prices: Record<'free'|'premium'|'pro', string> = {
+  private prices: Record<'free' | 'premium' | 'pro', string> = {
     free: process.env.STRIPE_PRICE_FREE || 'price_1Rv4VLLheOx3CRxGU3ccl6yu',
-    premium: process.env.STRIPE_PRICE_PREMIUM || 'price_1Rv4VULheOx3CRxGFoQnBFfy',
+    premium:
+      process.env.STRIPE_PRICE_PREMIUM || 'price_1Rv4VULheOx3CRxGFoQnBFfy',
     pro: process.env.STRIPE_PRICE_PRO || 'price_1Rv4VmLheOx3CRxGAEoX4FmG',
   };
 
@@ -23,18 +24,25 @@ export class StripeService {
     }
   }
 
-  isConfigured(): boolean { return !!this.stripe; }
+  isConfigured(): boolean {
+    return !!this.stripe;
+  }
 
-  async createCheckoutSession(input: { plan: 'free'|'premium'|'pro'; customerEmail?: string; successUrl: string; cancelUrl: string; }): Promise<{ url: string }> {
+  async createCheckoutSession(input: {
+    plan: 'free' | 'premium' | 'pro';
+    customerEmail?: string;
+    successUrl: string;
+    cancelUrl: string;
+  }): Promise<{ url: string }> {
     if (!this.stripe) throw new Error('Stripe não configurado');
     const price = this.prices[input.plan];
     if (!price) throw new Error('Preço não configurado');
-    
+
     // Para plano free, não precisa criar sessão de checkout
     if (input.plan === 'free') {
       return { url: input.successUrl };
     }
-    
+
     const session = await this.stripe.checkout.sessions.create({
       mode: 'subscription',
       customer_email: input.customerEmail,
@@ -47,17 +55,26 @@ export class StripeService {
     return { url: session.url! };
   }
 
-  async parseWebhookEvent(header: string | undefined, rawBody: Buffer): Promise<Stripe.Event | null> {
+  async parseWebhookEvent(
+    header: string | undefined,
+    rawBody: Buffer,
+  ): Promise<Stripe.Event | null> {
     if (!this.stripe) return null;
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!secret) return null;
     return this.stripe.webhooks.constructEvent(rawBody, header || '', secret);
   }
 
-  async createPortalSession(input: { customerEmail: string; returnUrl: string }): Promise<{ url: string } | null> {
+  async createPortalSession(input: {
+    customerEmail: string;
+    returnUrl: string;
+  }): Promise<{ url: string } | null> {
     if (!this.stripe) return null;
     // Tenta localizar o customer pelo e-mail
-    const list = await this.stripe.customers.list({ email: input.customerEmail, limit: 1 });
+    const list = await this.stripe.customers.list({
+      email: input.customerEmail,
+      limit: 1,
+    });
     const customer = list.data?.[0];
     if (!customer) return null;
     const session = await (this.stripe as any).billingPortal.sessions.create({
@@ -67,5 +84,3 @@ export class StripeService {
     return { url: session.url };
   }
 }
-
-

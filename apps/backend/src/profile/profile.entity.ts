@@ -50,6 +50,3 @@ export class ProfileEntity {
   @OneToMany(() => SkillEntity, (s) => s.profile, { cascade: true })
   skills?: SkillEntity[];
 }
-
-
-

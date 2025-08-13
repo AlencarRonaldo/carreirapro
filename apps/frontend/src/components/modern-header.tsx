@@ -294,7 +294,7 @@ export default function ModernHeader() {
           ) : (
             !onLoginPage && (
               <Link href="/login" className="inline-flex">
-                <Button>Entrar</Button>
+                <Button variant="depth">Entrar</Button>
               </Link>
             )
           )}

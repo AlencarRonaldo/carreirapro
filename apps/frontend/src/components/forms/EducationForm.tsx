@@ -97,7 +97,7 @@ function EducationFormDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? "Editar Educação" : "Adicionar Educação"}
+            {isEditing ? "Editar Escolaridade" : "Adicionar Escolaridade"}
           </DialogTitle>
           <DialogDescription>
             {isEditing 
@@ -361,7 +361,7 @@ export function EducationForm() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <GraduationCap className="h-5 w-5" />
-              Educação
+              Escolaridade
             </CardTitle>
             <CardDescription>
               Gerencie sua formação acadêmica

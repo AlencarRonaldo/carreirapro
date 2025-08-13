@@ -46,7 +46,7 @@ import { BillingController } from './billing/billing.controller';
       secret:
         process.env.NODE_ENV === 'production'
           ? (process.env.JWT_SECRET as string)
-          : process.env.JWT_SECRET ?? 'dev-secret',
+          : (process.env.JWT_SECRET ?? 'dev-secret'),
       signOptions: { expiresIn: '1h' },
     }),
     AuthModule,

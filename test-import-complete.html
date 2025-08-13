@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Importação - Validação Completa</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        #results { margin-top: 20px; }
+        .log-entry { margin: 5px 0; padding: 5px; background: #f8f9fa; border-left: 3px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Importação - Validação Completa</h1>
+    
+    <div class="test-section info">
+        <h3>Instruções</h3>
+        <p>1. Abra o DevTools (F12) para ver os logs do console</p>
+        <p>2. Clique no botão para testar a importação</p>
+        <p>3. Verifique se os dados aparecem nas seções correspondentes</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Controles de Teste</h3>
+        <button onclick="testEventListeners()" class="btn-primary">Testar Event Listeners</button>
+        <button onclick="simulateImport()" class="btn-success">Simular Importação Completa</button>
+        <button onclick="clearResults()" class="btn-secondary">Limpar Resultados</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        let testResults = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            const logMessage = `[${timestamp}] ${message}`;
+            
+            console.log(logMessage);
+            testResults.push({ message: logMessage, type });
+            updateResults();
+        }
+
+        function updateResults() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3>Resultados dos Testes</h3>' + 
+                testResults.map(r => `<div class="log-entry">${r.message}</div>`).join('');
+        }
+
+        function clearResults() {
+            testResults = [];
+            updateResults();
+        }
+
+        // Monitorar eventos customizados
+        ['experiences-reload', 'education-reload', 'skills-reload', 'profile-updated'].forEach(eventType => {
+            window.addEventListener(eventType, (e) => {
+                log(`✅ Evento recebido: ${eventType}`, 'success');
+                if (e.detail) {
+                    log(`📦 Detalhes do evento: ${JSON.stringify(e.detail)}`, 'info');
+                }
+            });
+        });
+
+        // Monitorar addEventListener para verificar se os hooks estão registrando listeners
+        const originalAddEventListener = window.addEventListener;
+        window.addEventListener = function(type, listener) {
+            if (type.includes('reload') || type.includes('updated')) {
+                log(`👂 Event listener registrado: ${type}`, 'info');
+            }
+            return originalAddEventListener.call(this, type, listener);
+        };
+
+        function testEventListeners() {
+            log('🚀 Iniciando teste de event listeners...', 'info');
+            
+            // Testar cada evento individualmente
+            setTimeout(() => {
+                log('📤 Disparando experiences-reload...', 'info');
+                window.dispatchEvent(new CustomEvent('experiences-reload'));
+            }, 500);
+
+            setTimeout(() => {
+                log('📤 Disparando education-reload...', 'info');
+                window.dispatchEvent(new CustomEvent('education-reload'));
+            }, 1000);
+
+            setTimeout(() => {
+                log('📤 Disparando skills-reload...', 'info');
+                window.dispatchEvent(new CustomEvent('skills-reload'));
+            }, 1500);
+
+            setTimeout(() => {
+                log('📤 Disparando profile-updated...', 'info');
+                window.dispatchEvent(new CustomEvent('profile-updated', { 
+                    detail: { profile: { id: 'test', fullName: 'Teste' } }
+                }));
+            }, 2000);
+        }
+
+        function simulateImport() {
+            log('🎯 Simulando importação completa do LinkedIn/PDF...', 'info');
+            
+            // Simular dados de resposta da API
+            const mockImportResponse = {
+                id: 'user123',
+                fullName: 'João Silva',
+                headline: 'Desenvolvedor Full Stack Senior',
+                email: 'joao.silva@email.com',
+                experiences: [
+                    {
+                        id: 'exp1',
+                        title: 'Desenvolvedor Senior',
+                        company: 'Tech Solutions Ltd',
+                        startDate: '2020-01-01',
+                        endDate: null,
+                        description: 'Desenvolvimento de aplicações web modernas usando React, Node.js e TypeScript'
+                    },
+                    {
+                        id: 'exp2', 
+                        title: 'Desenvolvedor Pleno',
+                        company: 'Startup Inovadora',
+                        startDate: '2018-06-01',
+                        endDate: '2019-12-31',
+                        description: 'Desenvolvimento de MVP para startup de fintech'
+                    }
+                ],
+                education: [
+                    {
+                        id: 'edu1',
+                        institution: 'Universidade Federal de São Paulo',
+                        degree: 'Bacharelado em Ciência da Computação',
+                        startDate: '2014-02-01',
+                        endDate: '2017-12-01'
+                    }
+                ],
+                skills: [
+                    { id: 'skill1', name: 'JavaScript', level: 5 },
+                    { id: 'skill2', name: 'React', level: 4 },
+                    { id: 'skill3', name: 'Node.js', level: 4 },
+                    { id: 'skill4', name: 'TypeScript', level: 4 },
+                    { id: 'skill5', name: 'PostgreSQL', level: 3 }
+                ]
+            };
+
+            // Simular o fluxo de importação
+            setTimeout(() => {
+                log('📥 Dados recebidos da API de importação', 'success');
+                log(`📊 Experiências: ${mockImportResponse.experiences.length}`, 'info');
+                log(`🎓 Educação: ${mockImportResponse.education.length}`, 'info'); 
+                log(`⚡ Skills: ${mockImportResponse.skills.length}`, 'info');
+                
+                // Disparar eventos como o useProfile faria
+                if (mockImportResponse.experiences.length > 0) {
+                    log('🔄 Disparando experiences-reload...', 'info');
+                    window.dispatchEvent(new CustomEvent('experiences-reload'));
+                }
+                
+                if (mockImportResponse.education.length > 0) {
+                    log('🔄 Disparando education-reload...', 'info');
+                    window.dispatchEvent(new CustomEvent('education-reload'));
+                }
+                
+                if (mockImportResponse.skills.length > 0) {
+                    log('🔄 Disparando skills-reload...', 'info');
+                    window.dispatchEvent(new CustomEvent('skills-reload'));
+                }
+                
+                log('🔄 Disparando profile-updated...', 'info');
+                window.dispatchEvent(new CustomEvent('profile-updated', { 
+                    detail: { profile: mockImportResponse }
+                }));
+                
+                log('✅ Simulação de importação concluída!', 'success');
+                
+            }, 1000);
+        }
+
+        // Inicializar
+        log('🌐 Página de teste carregada', 'info');
+        log('📍 Aguardando interação do usuário...', 'info');
+    </script>
+</body>
+</html>

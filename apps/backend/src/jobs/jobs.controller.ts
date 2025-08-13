@@ -17,7 +17,8 @@ export class JobsController {
     private readonly jobs: JobsService,
     private readonly profiles: ProfileService,
     private readonly docs: DocumentsService,
-    @InjectRepository(JobAnalysisEntity) private readonly jobRepo: Repository<JobAnalysisEntity>,
+    @InjectRepository(JobAnalysisEntity)
+    private readonly jobRepo: Repository<JobAnalysisEntity>,
     private readonly usage: UsageService,
   ) {}
 
@@ -28,11 +29,15 @@ export class JobsController {
     if (plan === 'starter') {
       const used = await this.usage.getCount(req.user.sub, 'job_analyses');
       if (used >= 3) {
-        return { error: 'limit', message: 'Limite mensal atingido no plano Starter (3 análises/mês)' } as any;
+        return {
+          error: 'limit',
+          message: 'Limite mensal atingido no plano Starter (3 análises/mês)',
+        } as any;
       }
     }
     const result = await this.jobs.analyzeJob(body);
-    if (plan === 'starter') await this.usage.increment(req.user.sub, 'job_analyses', 1);
+    if (plan === 'starter')
+      await this.usage.increment(req.user.sub, 'job_analyses', 1);
     return result;
   }
 
@@ -55,10 +60,17 @@ export class JobsController {
   ) {
     const userId: string = req.user.sub;
     const profile = await this.profiles.getOrCreate(userId);
-    const suggestions = await this.jobs.scoreProfileMatch(profile, body.analysis);
+    const suggestions = await this.jobs.scoreProfileMatch(
+      profile,
+      body.analysis,
+    );
     // simples estratégia: acrescentar keywords faltantes ao final do documento
-    const missing = Array.isArray(suggestions?.missingKeywords) ? suggestions.missingKeywords : [];
-    const extra = missing.length ? `\n\nPalavras-chave adicionadas: ${missing.join(', ')}` : '';
+    const missing = Array.isArray(suggestions?.missingKeywords)
+      ? suggestions.missingKeywords
+      : [];
+    const extra = missing.length
+      ? `\n\nPalavras-chave adicionadas: ${missing.join(', ')}`
+      : '';
     if (body.documentId) {
       const doc = await this.docs.get(userId, body.documentId);
       const newContent = `${doc.content ?? ''}${extra}`;
@@ -66,7 +78,10 @@ export class JobsController {
       return { documentId: body.documentId, applied: missing };
     }
     if (body.createIfMissing) {
-      const doc = await this.docs.create(userId, `${body.analysis?.title || 'Currículo'} (otimizado)`);
+      const doc = await this.docs.create(
+        userId,
+        `${body.analysis?.title || 'Currículo'} (otimizado)`,
+      );
       const content = `Resumo otimizado para: ${body.analysis?.title || ''}\nEmpresa: ${body.analysis?.company || ''}${extra}`;
       await this.docs.updateContent(userId, doc.id, content);
       return { documentId: doc.id, applied: missing };
@@ -75,7 +90,10 @@ export class JobsController {
   }
 
   @Post('save-analysis')
-  async saveAnalysis(@Req() req: any, @Body() body: { analysis: any; url?: string | null }) {
+  async saveAnalysis(
+    @Req() req: any,
+    @Body() body: { analysis: any; url?: string | null },
+  ) {
     const userId: string = req.user.sub;
     const a = body.analysis || {};
     const entity = this.jobRepo.create({
@@ -84,7 +102,9 @@ export class JobsController {
       title: a.title ?? '',
       sourceUrl: body.url ?? null,
       requiredSkills: Array.isArray(a.requiredSkills) ? a.requiredSkills : [],
-      responsibilities: Array.isArray(a.responsibilities) ? a.responsibilities : [],
+      responsibilities: Array.isArray(a.responsibilities)
+        ? a.responsibilities
+        : [],
       keywords: Array.isArray(a.keywords) ? a.keywords : [],
     });
     const saved = await this.jobRepo.save(entity);
@@ -92,10 +112,13 @@ export class JobsController {
   }
 
   @Post('save-as-application')
-  async saveAsApplication(@Req() req: any, @Body() body: { analysis: any; url?: string | null }) {
+  async saveAsApplication(
+    @Req() req: any,
+    @Body() body: { analysis: any; url?: string | null },
+  ) {
     const userId: string = req.user.sub;
     const a = body.analysis || {};
-    const app = await this.docs as any; // placeholder not used
+    const app = (await this.docs) as any; // placeholder not used
     // create application using ApplicationsService via HTTP should be done client-side; for convenience, return suggested payload
     return {
       company: a.company ?? '',
@@ -105,5 +128,3 @@ export class JobsController {
     };
   }
 }
-
-

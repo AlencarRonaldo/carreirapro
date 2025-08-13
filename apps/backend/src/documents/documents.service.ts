@@ -8,13 +8,19 @@ import { TemplateEntity } from './template.entity';
 @Injectable()
 export class DocumentsService {
   constructor(
-    @InjectRepository(DocumentEntity) private readonly repo: Repository<DocumentEntity>,
-    @InjectRepository(DocumentVersionEntity) private readonly versions: Repository<DocumentVersionEntity>,
-    @InjectRepository(TemplateEntity) private readonly templates: Repository<TemplateEntity>,
+    @InjectRepository(DocumentEntity)
+    private readonly repo: Repository<DocumentEntity>,
+    @InjectRepository(DocumentVersionEntity)
+    private readonly versions: Repository<DocumentVersionEntity>,
+    @InjectRepository(TemplateEntity)
+    private readonly templates: Repository<TemplateEntity>,
   ) {}
 
   list(ownerId: string, includeArchived = false) {
-    return this.repo.find({ where: { ownerId, ...(includeArchived ? {} : { isArchived: false }) }, order: { updatedAt: 'DESC' } });
+    return this.repo.find({
+      where: { ownerId, ...(includeArchived ? {} : { isArchived: false }) },
+      order: { updatedAt: 'DESC' },
+    });
   }
 
   async create(ownerId: string, title: string) {
@@ -45,7 +51,12 @@ export class DocumentsService {
   async duplicate(ownerId: string, id: string) {
     const doc = await this.repo.findOne({ where: { id, ownerId } });
     if (!doc) throw new NotFoundException('Documento não encontrado');
-    const copy = this.repo.create({ ownerId, title: `${doc.title} (cópia)`, content: doc.content });
+    const copy = this.repo.create({
+      ownerId,
+      title: `${doc.title} (cópia)`,
+      content: doc.content,
+      status: doc.status,
+    });
     return this.repo.save(copy);
   }
 
@@ -59,38 +70,73 @@ export class DocumentsService {
     const doc = await this.repo.findOne({ where: { id, ownerId } });
     if (!doc) throw new NotFoundException('Documento não encontrado');
     // save version before updating
-    await this.versions.save(this.versions.create({ document: doc, content: doc.content ?? '' }));
+    await this.versions.save(
+      this.versions.create({ document: doc, content: doc.content ?? '' }),
+    );
     doc.content = content;
+    return this.repo.save(doc);
+  }
+
+  async updateStatus(
+    ownerId: string,
+    id: string,
+    status: 'draft' | 'pending' | 'done',
+  ) {
+    const doc = await this.repo.findOne({ where: { id, ownerId } });
+    if (!doc) throw new NotFoundException('Documento não encontrado');
+    doc.status = status;
     return this.repo.save(doc);
   }
 
   async listVersions(ownerId: string, id: string) {
     const doc = await this.repo.findOne({ where: { id, ownerId } });
     if (!doc) throw new NotFoundException('Documento não encontrado');
-    return this.versions.find({ where: { document: { id: doc.id } }, order: { createdAt: 'DESC' } });
+    return this.versions.find({
+      where: { document: { id: doc.id } },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async restoreVersion(ownerId: string, id: string, versionId: string) {
     const doc = await this.repo.findOne({ where: { id, ownerId } });
     if (!doc) throw new NotFoundException('Documento não encontrado');
-    const version = await this.versions.findOne({ where: { id: versionId, document: { id: doc.id } } });
+    const version = await this.versions.findOne({
+      where: { id: versionId, document: { id: doc.id } },
+    });
     if (!version) throw new NotFoundException('Versão não encontrada');
-    await this.versions.save(this.versions.create({ document: doc, content: doc.content ?? '' }));
+    await this.versions.save(
+      this.versions.create({ document: doc, content: doc.content ?? '' }),
+    );
     doc.content = version.content;
     return this.repo.save(doc);
   }
 
-  async findTemplate(ownerId: string, key: string): Promise<TemplateEntity | null> {
+  async findTemplate(
+    ownerId: string,
+    key: string,
+  ): Promise<TemplateEntity | null> {
     return this.templates.findOne({ where: { ownerId, key } });
   }
 
   async listTemplates(ownerId: string) {
-    return this.templates.find({ where: { ownerId }, order: { updatedAt: 'DESC' } });
+    return this.templates.find({
+      where: { ownerId },
+      order: { updatedAt: 'DESC' },
+    });
   }
 
   async upsertTemplate(ownerId: string, data: Partial<TemplateEntity>) {
-    let tpl = await this.templates.findOne({ where: { ownerId, key: data.key! } });
-    if (!tpl) tpl = this.templates.create({ ownerId, key: data.key!, name: data.name || data.key!, body: data.body || '', html: data.html ?? null });
+    let tpl = await this.templates.findOne({
+      where: { ownerId, key: data.key! },
+    });
+    if (!tpl)
+      tpl = this.templates.create({
+        ownerId,
+        key: data.key!,
+        name: data.name || data.key!,
+        body: data.body || '',
+        html: data.html ?? null,
+      });
     else {
       tpl.name = data.name ?? tpl.name;
       tpl.body = data.body ?? tpl.body;
@@ -105,5 +151,3 @@ export class DocumentsService {
     await this.templates.remove(tpl);
   }
 }
-
-

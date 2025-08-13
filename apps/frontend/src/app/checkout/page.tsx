@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { API_BASE, fetchWithAuth } from "@/lib/api"
 import { toast } from "sonner"
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const sp = useSearchParams()
   const router = useRouter()
   const plan = (sp.get("plan") as 'starter'|'pro'|'team') || 'pro'
@@ -64,4 +64,17 @@ export default function CheckoutPage() {
   )
 }
 
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-dvh flex items-center justify-center p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold">Carregando checkout...</h1>
+        </div>
+      </main>
+    }>
+      <CheckoutContent />
+    </Suspense>
+  )
+}
 

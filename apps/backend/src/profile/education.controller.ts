@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { EducationService } from './education.service';
 import { CreateEducationDto } from './dto/create-education.dto';
@@ -20,7 +30,11 @@ export class EducationController {
   }
 
   @Put(':id')
-  update(@Req() req: any, @Param('id') id: string, @Body() body: UpdateEducationDto) {
+  update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateEducationDto,
+  ) {
     return this.service.update(req.user.sub, id, body);
   }
 
@@ -29,5 +43,3 @@ export class EducationController {
     return this.service.remove(req.user.sub, id);
   }
 }
-
-

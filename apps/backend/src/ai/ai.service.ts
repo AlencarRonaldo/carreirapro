@@ -2,14 +2,18 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AiService {
-  async suggestSentences(input: { role?: string; achievements?: string[]; context?: string }): Promise<string[]> {
+  async suggestSentences(input: {
+    role?: string;
+    achievements?: string[];
+    context?: string;
+  }): Promise<string[]> {
     // Tenta usar Ollama local se disponível (grátis e offline)
     const host = process.env.OLLAMA_HOST || 'http://localhost:11434';
     const model = process.env.OLLAMA_MODEL || 'llama3.1';
     try {
       // import dinâmico para não exigir dependência quando não usada
       const ollamaMod: any = await import('ollama');
-      const ollama = (ollamaMod.default ?? ollamaMod);
+      const ollama = ollamaMod.default ?? ollamaMod;
       const messages = [
         {
           role: 'user',
@@ -28,7 +32,10 @@ export class AiService {
         if (Array.isArray(parsed)) return parsed.slice(0, 3).map(String);
       } catch {}
       // fallback: dividir por quebras de linha
-      const lines = content.split(/\n+/).map((s) => s.replace(/^[-•\d.\s]+/, '').trim()).filter(Boolean);
+      const lines = content
+        .split(/\n+/)
+        .map((s) => s.replace(/^[-•\d.\s]+/, '').trim())
+        .filter(Boolean);
       if (lines.length >= 3) return lines.slice(0, 3);
     } catch {
       // segue para stub
@@ -36,15 +43,20 @@ export class AiService {
 
     // Stub local
     const base: string[] = [];
-    if (input.role) base.push(`Liderei iniciativas como ${input.role}, entregando resultados mensuráveis.`);
+    if (input.role)
+      base.push(
+        `Liderei iniciativas como ${input.role}, entregando resultados mensuráveis.`,
+      );
     if (input.achievements && input.achievements.length > 0)
       base.push(`Principais conquistas: ${input.achievements.join('; ')}.`);
     if (input.context)
-      base.push(`Responsável por ${input.context}, com foco em impacto e melhoria contínua.`);
+      base.push(
+        `Responsável por ${input.context}, com foco em impacto e melhoria contínua.`,
+      );
     while (base.length < 3)
-      base.push('Desenvolvi entregas com foco em valor e qualidade, colaborando com times multidisciplinares.');
+      base.push(
+        'Desenvolvi entregas com foco em valor e qualidade, colaborando com times multidisciplinares.',
+      );
     return base.slice(0, 3);
   }
 }
-
-

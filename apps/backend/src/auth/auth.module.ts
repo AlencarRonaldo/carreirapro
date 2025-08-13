@@ -10,5 +10,3 @@ import { UserEntity } from './user.entity';
   controllers: [AuthController],
 })
 export class AuthModule {}
-
-

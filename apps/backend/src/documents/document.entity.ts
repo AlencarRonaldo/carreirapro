@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('documents')
 export class DocumentEntity {
@@ -15,6 +22,10 @@ export class DocumentEntity {
   @Column({ type: 'text', default: '' })
   content!: string;
 
+  // draft | pending | done
+  @Column({ type: 'varchar', length: 20, default: 'draft' })
+  status!: string;
+
   @Column({ type: 'boolean', default: false })
   isArchived!: boolean;
 
@@ -27,5 +38,3 @@ export class DocumentEntity {
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
 }
-
-

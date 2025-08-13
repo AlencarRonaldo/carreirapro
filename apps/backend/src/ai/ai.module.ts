@@ -7,10 +7,12 @@ import { DocumentsModule } from '../documents/documents.module';
 import { UserEntity } from '../auth/user.entity';
 
 @Module({
-  imports: [ProfileModule, DocumentsModule, TypeOrmModule.forFeature([UserEntity])],
+  imports: [
+    ProfileModule,
+    DocumentsModule,
+    TypeOrmModule.forFeature([UserEntity]),
+  ],
   providers: [AiService],
   controllers: [AiController],
 })
 export class AiModule {}
-
-

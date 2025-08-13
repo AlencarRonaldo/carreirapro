@@ -18,7 +18,9 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     app.useGlobalFilters(new AllExceptionsFilter());
     app.useGlobalInterceptors(new LoggingInterceptor());
     await app.init();
@@ -29,7 +31,12 @@ describe('AppController (e2e)', () => {
     const demoEmail = 'demo@carreirapro.app';
     const exists = await repo.findOne({ where: { email: demoEmail } });
     if (!exists) {
-      await repo.save(repo.create({ email: demoEmail, passwordHash: bcrypt.hashSync('demo123', 10) }));
+      await repo.save(
+        repo.create({
+          email: demoEmail,
+          passwordHash: bcrypt.hashSync('demo123', 10),
+        }),
+      );
     }
   });
 

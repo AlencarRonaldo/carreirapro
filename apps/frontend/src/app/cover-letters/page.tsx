@@ -7,6 +7,7 @@ import { toast } from "sonner"
 type Analysis = { id?: string; company?: string; title?: string; requiredSkills?: string[]; responsibilities?: string[]; keywords?: string[] }
 
 export default function CoverLettersPage() {
+  const [plan, setPlan] = useState<'starter'|'pro'|'team'|'unknown'>('unknown')
   const [description, setDescription] = useState("")
   const [url, setUrl] = useState("")
   const [tone, setTone] = useState<'profissional'|'entusiasta'|'confiante'>('profissional')
@@ -59,6 +60,7 @@ export default function CoverLettersPage() {
 
   async function doGenerate() {
     try {
+      if (plan === 'starter') { toast.error('Disponível no plano Pro/Team. Faça upgrade para gerar cartas.'); return }
       if (!analysis) { toast.error('Analise uma vaga primeiro'); return }
       setLoading(true)
       // Busca o perfil antes de gerar para enviar dados reais
@@ -78,7 +80,8 @@ export default function CoverLettersPage() {
   return (
     <main className="mx-auto max-w-5xl p-6 space-y-6">
       <h1 className="text-2xl font-semibold">Cartas de Apresentação</h1>
-      <p className="text-sm text-muted-foreground">Gere cartas com IA a partir da descrição/URL da vaga. Recursos avançados requerem plano Pro/Team.</p>
+      <p className="text-sm text-muted-foreground">Gere cartas com IA a partir da descrição/URL da vaga.</p>
+      <PlanNotice setPlan={(p)=>setPlan(p)} />
 
       <section className="rounded-lg border p-4 grid gap-3">
         <input className="border rounded px-3 py-2 text-sm" placeholder="URL da vaga (opcional)" value={url} onChange={(e)=>setUrl(e.target.value)} />
@@ -127,6 +130,41 @@ export default function CoverLettersPage() {
         )}
       </section>
     </main>
+  )
+}
+
+function PlanNotice({ setPlan }: { setPlan: (p: 'starter'|'pro'|'team')=>void }) {
+  const [loading, setLoading] = useState(true)
+  const [userPlan, setUserPlan] = useState<'starter'|'pro'|'team'>('starter')
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetchWithAuth(`${API_BASE}/subscription`, { cache: 'no-store' })
+        if (res.ok) {
+          const data = await res.json()
+          const p = (data?.plan as 'starter'|'pro'|'team') || 'starter'
+          setUserPlan(p)
+          setPlan(p)
+        } else {
+          setUserPlan('starter')
+          setPlan('starter')
+        }
+      } catch {
+        setUserPlan('starter')
+        setPlan('starter')
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [setPlan])
+
+  if (loading) return null
+  if (userPlan !== 'starter') return null
+
+  return (
+    <div className="rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
+      Recurso disponível no plano Pro/Team. Faça upgrade para gerar cartas de apresentação com IA.
+    </div>
   )
 }
 

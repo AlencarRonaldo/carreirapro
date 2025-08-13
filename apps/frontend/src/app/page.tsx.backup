@@ -1,0 +1,52 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { Toaster } from "@/components/ui/sonner"
+
+// New modern landing page components
+import { ModernHero } from "@/components/landing/modern-hero"
+import { FeaturesSection } from "@/components/landing/features-section"
+import { HowItWorksSection } from "@/components/landing/how-it-works"
+import { ProductDemoSection } from "@/components/landing/product-demo"
+import { TestimonialsSection } from "@/components/landing/testimonials-section"
+import { PricingSection } from "@/components/landing/pricing-section"
+import { ModernFooter } from "@/components/landing/modern-footer"
+
+export default function Home() {
+  const [authed, setAuthed] = useState(false)
+
+  useEffect(() => {
+    try { 
+      setAuthed(!!localStorage.getItem("cp_token")) 
+    } catch { 
+      setAuthed(false) 
+    }
+  }, [])
+
+  return (
+    <main className="min-h-screen">
+      {/* Modern Hero Section */}
+      <ModernHero isAuthenticated={authed} />
+      
+      {/* Features Section */}
+      <FeaturesSection />
+      
+      {/* How It Works */}
+      <HowItWorksSection />
+      
+      {/* Product Demo */}
+      <ProductDemoSection />
+      
+      {/* Testimonials & Social Proof */}
+      <TestimonialsSection />
+      
+      {/* Pricing */}
+      <PricingSection isAuthenticated={authed} />
+      
+      {/* Footer */}
+      <ModernFooter />
+      
+      <Toaster richColors />
+    </main>
+  )
+}

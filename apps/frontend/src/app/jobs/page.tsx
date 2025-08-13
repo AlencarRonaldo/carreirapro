@@ -22,6 +22,8 @@ type ScoreResult = {
   missingKeywords?: string[]
 }
 
+type DocumentItem = { id: string; title: string }
+
 export default function JobsPage() {
   const [url, setUrl] = useState("")
   const [description, setDescription] = useState("")
@@ -36,6 +38,8 @@ export default function JobsPage() {
   const [scoreLoading, setScoreLoading] = useState(false)
   const [score, setScore] = useState<ScoreResult | null>(null)
   const [saveLoading, setSaveLoading] = useState(false)
+  const [documents, setDocuments] = useState<DocumentItem[]>([])
+  const [selectedDocId, setSelectedDocId] = useState<string>("")
 
   async function onAnalyze() {
     setLoading(true)
@@ -86,7 +90,7 @@ export default function JobsPage() {
       const res = await fetchWithAuth(`${API_BASE}/jobs/optimize-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analysis, createIfMissing: true }),
+        body: JSON.stringify({ analysis, documentId: selectedDocId || undefined, createIfMissing: !selectedDocId }),
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
@@ -141,6 +145,19 @@ export default function JobsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysis])
 
+  // carregar lista de documentos disponíveis (não arquivados)
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await fetchWithAuth(`${API_BASE}/documents`)
+        if (!res.ok) return
+        const list = await res.json()
+        const docs = Array.isArray(list) ? list.map((d: any) => ({ id: d.id, title: d.title })) : []
+        setDocuments(docs)
+      } catch {}
+    })()
+  }, [])
+
   async function onSaveAsApplication() {
     if (!analysis) return
     try {
@@ -175,6 +192,14 @@ export default function JobsPage() {
           <div><strong>Responsabilidades:</strong> {analysis.responsibilities.join(', ')}</div>
           <div><strong>Keywords:</strong> {analysis.keywords.join(', ')}</div>
           <div className="flex items-center gap-2 pt-2 flex-wrap">
+            {documents.length > 0 && (
+              <select className="border rounded px-2 py-1 text-sm" value={selectedDocId} onChange={(e)=>setSelectedDocId(e.target.value)}>
+                <option value="">Selecionar currículo (opcional)</option>
+                {documents.map((d)=> (
+                  <option key={d.id} value={d.id}>{d.title}</option>
+                ))}
+              </select>
+            )}
             <select className="border rounded px-2 py-1 text-sm" value={tone} onChange={(e)=>setTone(e.target.value)}>
               <option value="profissional">profissional</option>
               <option value="entusiasta">entusiasta</option>

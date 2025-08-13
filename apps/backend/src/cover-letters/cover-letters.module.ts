@@ -18,5 +18,3 @@ import { UserEntity } from '../auth/user.entity';
   providers: [CoverLettersService, RequireProPlanGuard],
 })
 export class CoverLettersModule {}
-
-

@@ -21,38 +21,62 @@ export class CoverLettersService {
   }
 
   private isOllama() {
-    return (this.config.get<string>('AI_PROVIDER') || '').toLowerCase() === 'ollama'
+    return (
+      (this.config.get<string>('AI_PROVIDER') || '').toLowerCase() === 'ollama'
+    );
   }
 
   private getModel(defaultModel: string) {
-    return this.config.get<string>('AI_MODEL') || defaultModel
+    return this.config.get<string>('AI_MODEL') || defaultModel;
   }
 
   private stripJsonFences(s: string): string {
-    const trimmed = (s || '').trim()
+    const trimmed = (s || '').trim();
     if (trimmed.startsWith('```')) {
-      return trimmed.replace(/^```[a-zA-Z]*\n/, '').replace(/```\s*$/, '').trim()
+      return trimmed
+        .replace(/^```[a-zA-Z]*\n/, '')
+        .replace(/```\s*$/, '')
+        .trim();
     }
-    return trimmed
+    return trimmed;
   }
 
-  private async chatToText({ system, user, expectJson = false }: { system: string; user: string; expectJson?: boolean }): Promise<string> {
+  private async chatToText({
+    system,
+    user,
+    expectJson = false,
+  }: {
+    system: string;
+    user: string;
+    expectJson?: boolean;
+  }): Promise<string> {
     if (this.isOllama()) {
-      const model = this.getModel('llama3.1')
+      const model = this.getModel('llama3.1');
       const resp = await firstValueFrom(
-        this.http.post('http://localhost:11434/api/chat', {
-          model,
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: user + (expectJson ? '\n\nResponda SOMENTE com JSON válido, sem comentários.' : '') },
-          ],
-          stream: false,
-        }, { timeout: 20000 })
-      )
-      const content: string = resp.data?.message?.content ?? ''
-      return expectJson ? this.stripJsonFences(content) : content
+        this.http.post(
+          'http://localhost:11434/api/chat',
+          {
+            model,
+            messages: [
+              { role: 'system', content: system },
+              {
+                role: 'user',
+                content:
+                  user +
+                  (expectJson
+                    ? '\n\nResponda SOMENTE com JSON válido, sem comentários.'
+                    : ''),
+              },
+            ],
+            stream: false,
+          },
+          { timeout: 20000 },
+        ),
+      );
+      const content: string = resp.data?.message?.content ?? '';
+      return expectJson ? this.stripJsonFences(content) : content;
     }
-    const model = this.getModel(expectJson ? 'gpt-4o-mini' : 'gpt-4o')
+    const model = this.getModel(expectJson ? 'gpt-4o-mini' : 'gpt-4o');
     const response = await firstValueFrom(
       this.http.post(
         'https://api.openai.com/v1/chat/completions',
@@ -63,40 +87,66 @@ export class CoverLettersService {
             { role: 'user', content: user },
           ],
           temperature: expectJson ? 0.3 : 0.7,
-          ...(expectJson ? { response_format: { type: 'json_object' } as any } : {}),
+          ...(expectJson
+            ? { response_format: { type: 'json_object' } as any }
+            : {}),
         },
-        { headers: { Authorization: `Bearer ${this.openaiApiKey}`, 'Content-Type': 'application/json' }, timeout: 20000 },
+        {
+          headers: {
+            Authorization: `Bearer ${this.openaiApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 20000,
+        },
       ),
-    )
-    const text: string = response.data?.choices?.[0]?.message?.content ?? ''
-    return expectJson ? this.stripJsonFences(text) : text
+    );
+    const text: string = response.data?.choices?.[0]?.message?.content ?? '';
+    return expectJson ? this.stripJsonFences(text) : text;
   }
 
-  async generateCoverLetter(userId: string, generateDto: GenerateCoverLetterDto) {
+  async generateCoverLetter(
+    userId: string,
+    generateDto: GenerateCoverLetterDto,
+  ) {
     const { profileData, jobAnalysis, tone, language } = generateDto;
 
-    const prompt = this.buildCoverLetterPrompt(profileData, jobAnalysis, tone ?? 'profissional', language ?? 'português');
-    let letterContent = ''
+    const prompt = this.buildCoverLetterPrompt(
+      profileData,
+      jobAnalysis,
+      tone ?? 'profissional',
+      language ?? 'português',
+    );
+    let letterContent = '';
     // Fallback local sem IA externa
     if (!this.openaiApiKey && !this.isOllama()) {
-      const nome = profileData?.fullName || 'Candidato'
-      const cargo = jobAnalysis?.title || 'a vaga'
-      const empresa = jobAnalysis?.company || 'sua empresa'
+      const nome = profileData?.fullName || 'Candidato';
+      const cargo = jobAnalysis?.title || 'a vaga';
+      const empresa = jobAnalysis?.company || 'sua empresa';
       letterContent = `${new Date().toLocaleDateString('pt-BR')}
 
 Prezados recrutadores,
 
-Tenho grande interesse em ${cargo} na ${empresa}. Minha experiência em ${(profileData?.experiences?.[0]?.title || 'minha área de atuação')} e competências como ${(profileData?.skills || []).slice(0,5).map((s:any)=>s?.name).filter(Boolean).join(', ')} me habilitam a contribuir rapidamente.
+Tenho grande interesse em ${cargo} na ${empresa}. Minha experiência em ${profileData?.experiences?.[0]?.title || 'minha área de atuação'} e competências como ${(
+        profileData?.skills || []
+      )
+        .slice(0, 5)
+        .map((s: any) => s?.name)
+        .filter(Boolean)
+        .join(', ')} me habilitam a contribuir rapidamente.
 
-Ao analisar os requisitos (ex.: ${(jobAnalysis?.requiredSkills || []).slice(0,5).join(', ')}), identifiquei forte alinhamento com minhas experiências, especialmente em ${(profileData?.experiences?.[0]?.achievements || []).slice(0,2).join(', ')}.
+Ao analisar os requisitos (ex.: ${(jobAnalysis?.requiredSkills || []).slice(0, 5).join(', ')}), identifiquei forte alinhamento com minhas experiências, especialmente em ${(profileData?.experiences?.[0]?.achievements || []).slice(0, 2).join(', ')}.
 
 Estou motivado(a) para somar com resultados e colaborar com a equipe.
 
 Atenciosamente,
-${nome}`
+${nome}`;
     } else {
-      const system = `Você é um especialista em redação de cartas de apresentação profissionais. Crie cartas persuasivas, personalizadas e que demonstrem fit perfeito com a vaga. Use técnicas de storytelling e destaque resultados quantificáveis. Mantenha um tom ${tone || 'profissional'} e escreva em ${language || 'português'}.`
-      letterContent = await this.chatToText({ system, user: prompt, expectJson: false })
+      const system = `Você é um especialista em redação de cartas de apresentação profissionais. Crie cartas persuasivas, personalizadas e que demonstrem fit perfeito com a vaga. Use técnicas de storytelling e destaque resultados quantificáveis. Mantenha um tom ${tone || 'profissional'} e escreva em ${language || 'português'}.`;
+      letterContent = await this.chatToText({
+        system,
+        user: prompt,
+        expectJson: false,
+      });
     }
 
     const entity = this.coverLetters.create({
@@ -113,21 +163,45 @@ ${nome}`
     });
     const saved = await this.coverLetters.save(entity);
 
-    let qualityScore: any
+    let qualityScore: any;
     if (!this.openaiApiKey && !this.isOllama()) {
       // heurística simples
-      const kw = (jobAnalysis?.keywords || []).slice(0, 12)
-      const hits = kw.filter((k: string) => letterContent.toLowerCase().includes(String(k).toLowerCase()))
-      const score = Math.max(40, Math.min(95, Math.round((hits.length / Math.max(1, kw.length)) * 100)))
-      qualityScore = { score, strengths: hits.map((k: string)=>`Uso de palavra-chave: ${k}`), weaknesses: kw.filter((k: string)=>!hits.includes(k)).map((k:string)=>`Poderia mencionar: ${k}`), suggestions: [] }
+      const kw = (jobAnalysis?.keywords || []).slice(0, 12);
+      const hits = kw.filter((k: string) =>
+        letterContent.toLowerCase().includes(String(k).toLowerCase()),
+      );
+      const score = Math.max(
+        40,
+        Math.min(95, Math.round((hits.length / Math.max(1, kw.length)) * 100)),
+      );
+      qualityScore = {
+        score,
+        strengths: hits.map((k: string) => `Uso de palavra-chave: ${k}`),
+        weaknesses: kw
+          .filter((k: string) => !hits.includes(k))
+          .map((k: string) => `Poderia mencionar: ${k}`),
+        suggestions: [],
+      };
     } else {
-      qualityScore = await this.analyzeCoverLetterQuality(letterContent, jobAnalysis);
+      qualityScore = await this.analyzeCoverLetterQuality(
+        letterContent,
+        jobAnalysis,
+      );
     }
 
-    return { ...saved, qualityScore, suggestions: (qualityScore as any)?.suggestions };
+    return {
+      ...saved,
+      qualityScore,
+      suggestions: qualityScore?.suggestions,
+    };
   }
 
-  private buildCoverLetterPrompt(profile: any, jobAnalysis: any, tone: string, language: string): string {
+  private buildCoverLetterPrompt(
+    profile: any,
+    jobAnalysis: any,
+    tone: string,
+    language: string,
+  ): string {
     return `
 Crie uma carta de apresentação profissional com base nos seguintes dados:
 
@@ -139,7 +213,9 @@ Resumo: ${profile.bio}
 Experiências Relevantes:
 ${(profile.experiences || [])
   .map(
-    (exp: any) => `- ${exp.title} na ${exp.company} (${exp.startDate} - ${exp.endDate || 'Presente'})
+    (
+      exp: any,
+    ) => `- ${exp.title} na ${exp.company} (${exp.startDate} - ${exp.endDate || 'Presente'})
   ${exp.description}
   Principais realizações: ${(exp.achievements || []).join(', ') || 'N/A'}`,
   )
@@ -181,7 +257,10 @@ Atenciosamente,
 `;
   }
 
-  private async analyzeCoverLetterQuality(letterContent: string, jobAnalysis: any) {
+  private async analyzeCoverLetterQuality(
+    letterContent: string,
+    jobAnalysis: any,
+  ) {
     const prompt = `
 Analise a qualidade desta carta de apresentação considerando:
 1. Alinhamento com os requisitos da vaga
@@ -204,22 +283,33 @@ Retorne um JSON com:
 - suggestions (array de sugestões específicas)
 `;
 
-    const system2 = 'Você é um especialista em análise de cartas de apresentação.'
+    const system2 =
+      'Você é um especialista em análise de cartas de apresentação.';
     try {
-      const content = await this.chatToText({ system: system2, user: prompt, expectJson: true })
-      return JSON.parse(content)
+      const content = await this.chatToText({
+        system: system2,
+        user: prompt,
+        expectJson: true,
+      });
+      return JSON.parse(content);
     } catch {
-      return { score: 0, strengths: [], weaknesses: [], suggestions: [] }
+      return { score: 0, strengths: [], weaknesses: [], suggestions: [] };
     }
   }
 
-  async updateCoverLetter(userId: string, letterId: string, updateDto: UpdateCoverLetterDto) {
-    const letter = await this.coverLetters.findOne({ where: { id: letterId, userId } });
+  async updateCoverLetter(
+    userId: string,
+    letterId: string,
+    updateDto: UpdateCoverLetterDto,
+  ) {
+    const letter = await this.coverLetters.findOne({
+      where: { id: letterId, userId },
+    });
     if (!letter) throw new Error('Cover letter not found');
     letter.content = updateDto.content;
     letter.updatedAt = new Date();
     return this.coverLetters.save(letter);
-    }
+  }
 
   async getCoverLetterTemplates() {
     return [
@@ -241,33 +331,65 @@ Retorne um JSON com:
         id: 'modern',
         name: 'Moderno',
         description: 'Abordagem contemporânea e direta',
-        structure: ['Hook impactante', 'Proposta de valor clara', 'Cases de sucesso', 'Fit cultural', 'Próximos passos'],
+        structure: [
+          'Hook impactante',
+          'Proposta de valor clara',
+          'Cases de sucesso',
+          'Fit cultural',
+          'Próximos passos',
+        ],
       },
       {
         id: 'storytelling',
         name: 'Storytelling',
         description: 'Narrativa envolvente',
-        structure: ['História de abertura', 'Desafio enfrentado', 'Ação tomada', 'Resultado alcançado', 'Conexão com a vaga', 'Visão de futuro'],
+        structure: [
+          'História de abertura',
+          'Desafio enfrentado',
+          'Ação tomada',
+          'Resultado alcançado',
+          'Conexão com a vaga',
+          'Visão de futuro',
+        ],
       },
       {
         id: 'technical',
         name: 'Técnico',
         description: 'Foco em competências técnicas',
-        structure: ['Expertise técnica', 'Stack tecnológico', 'Projetos relevantes', 'Contribuições open source', 'Certificações', 'Disponibilidade'],
+        structure: [
+          'Expertise técnica',
+          'Stack tecnológico',
+          'Projetos relevantes',
+          'Contribuições open source',
+          'Certificações',
+          'Disponibilidade',
+        ],
       },
     ];
   }
 
-  async generateCoverLetterVariations(userId: string, generateDto: GenerateCoverLetterDto) {
+  async generateCoverLetterVariations(
+    userId: string,
+    generateDto: GenerateCoverLetterDto,
+  ) {
     const tones = ['profissional', 'entusiasta', 'confiante'];
     const variations: Array<any> = [];
     for (const t of tones) {
-      const letter = await this.generateCoverLetter(userId, { ...generateDto, tone: t });
-      variations.push({ tone: t, content: (letter as any).content ?? (letter as any).content, qualityScore: (letter as any).qualityScore });
+      const letter = await this.generateCoverLetter(userId, {
+        ...generateDto,
+        tone: t,
+      });
+      variations.push({
+        tone: t,
+        content: (letter as any).content ?? (letter as any).content,
+        qualityScore: (letter as any).qualityScore,
+      });
     }
-    const recommendation = variations.reduce((best, cur) => (cur.qualityScore?.score > (best.qualityScore?.score ?? -1) ? cur : best), variations[0]);
+    const recommendation = variations.reduce(
+      (best, cur) =>
+        cur.qualityScore?.score > (best.qualityScore?.score ?? -1) ? cur : best,
+      variations[0],
+    );
     return { variations, recommendation };
   }
 }
-
-

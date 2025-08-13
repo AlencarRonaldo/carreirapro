@@ -7,6 +7,11 @@ export type SimpleTemplate = {
   premium?: boolean;
 };
 
+// ✅ TEMPLATES ATUALIZADOS COM NORMAS ABNT COMPLETAS:
+// - Margens: 3cm superior, 2cm inferior, 3cm esquerda, 2cm direita  
+// - Fonte: Times New Roman 12pt
+// - Espaçamento: 1,5 entre linhas
+// - Marcadores alinhados com o texto conforme normas ABNT
 export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   {
     key: 'plain-default',
@@ -17,10 +22,13 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #111; padding: 24px; }
-  .name { font-size: 24px; font-weight: 700; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
+  .name { font-size: 14pt; font-weight: bold; }
   .headline { color: #555; margin-bottom: 16px; }
   .meta { font-size: 12px; color: #666; margin-bottom: 16px; }
+  .meta-lines { margin: 8px 0 16px; }
+  .meta-line { font-size: 12px; color: #666; margin: 2px 0; }
   .content { white-space: pre-wrap; line-height: 1.4; }
   .section { margin-top: 20px; }
   .item { margin: 6px 0; }
@@ -29,14 +37,19 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <body>
   <div class="name">{{fullName}}</div>
   <div class="headline">{{headline}}</div>
-  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
+  <div class="meta-lines">
+    <div class="meta-line">Email: {{email}}</div>
+    <div class="meta-line">Telefone: {{phone}}</div>
+    <div class="meta-line">Cidade: {{locationCity}} • {{locationState}} • {{locationCountry}}</div>
+    <div class="meta-line">Estado civil: {{maritalStatus}}</div>
+  </div>
   <div class="content">{{content}}</div>
   <div class="section">
     <div class="item"><strong>Experiências</strong></div>
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="item"><strong>Educação</strong></div>
+    <div class="item"><strong>Escolaridade</strong></div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -57,8 +70,9 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Georgia, serif; color: #111; padding: 32px; }
-  h1 { font-size: 20px; margin: 0; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
+  h1 { font-size: 14pt; margin: 0; font-weight: bold; }
   h2 { font-size: 14px; margin: 4px 0 16px; color: #444; }
   .content { white-space: pre-wrap; line-height: 1.45; }
   .meta { font-size: 11px; color: #666; margin-bottom: 12px; }
@@ -71,14 +85,19 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <body>
   <h1>{{fullName}}</h1>
   <h2>{{headline}}</h2>
-  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
+  <div class="meta-lines">
+    <div class="meta-line">Email: {{email}}</div>
+    <div class="meta-line">Telefone: {{phone}}</div>
+    <div class="meta-line">Cidade: {{locationCity}} • {{locationState}} • {{locationCountry}}</div>
+    <div class="meta-line">Estado civil: {{maritalStatus}}</div>
+  </div>
   <div class="content">{{content}}</div>
   <div class="section">
     <div class="item"><strong>Experiências</strong></div>
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="item"><strong>Educação</strong></div>
+    <div class="item"><strong>Escolaridade</strong></div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -99,8 +118,9 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Inter, Arial, sans-serif; color: #0f172a; padding: 24px; }
-  .name { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
+  .name { font-size: 14pt; font-weight: bold; }
   .headline { color: #334155; margin: 6px 0 14px; font-weight: 500; }
   .meta { font-size: 12px; color: #475569; margin-bottom: 18px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
@@ -115,7 +135,12 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <body>
   <div class="name">{{fullName}}</div>
   <div class="headline">{{headline}}</div>
-  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
+  <div class="meta-lines">
+    <div class="meta-line">Email: {{email}}</div>
+    <div class="meta-line">Telefone: {{phone}}</div>
+    <div class="meta-line">Cidade: {{locationCity}} • {{locationState}} • {{locationCountry}}</div>
+    <div class="meta-line">Estado civil: {{maritalStatus}}</div>
+  </div>
   <div class="grid">
     <div class="card">
       <div class="sec-title">Resumo</div>
@@ -130,7 +155,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
       <div>{{experiences}}</div>
     </div>
     <div class="card">
-      <div class="sec-title">Educação</div>
+      <div class="sec-title">Escolaridade</div>
       <div>{{education}}</div>
     </div>
   </div>
@@ -149,8 +174,9 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <meta charset="utf-8" />
 <style>
   * { box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; color: #1f2937; padding: 28px; }
-  h1 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
+  h1 { font-size: 14pt; margin: 0 0 4pt; font-weight: bold; }
   h2 { font-size: 13px; margin: 0 0 14px; color: #6b7280; font-weight: 600; }
   .bar { height: 2px; background: #e5e7eb; margin: 10px 0 18px; }
   .section { margin-bottom: 16px; }
@@ -174,7 +200,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="label">Educação</div>
+    <div class="label">Escolaridade</div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -195,8 +221,9 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #000; background: #fff; padding: 24px; }
-  .name { font-size: 20px; font-weight: bold; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; background: #fff; padding: 0; margin: 0; }
+  .name { font-size: 14pt; font-weight: bold; }
   .headline { font-size: 12px; margin: 2px 0 10px; }
   .meta, .label { font-size: 11px; }
   .label { font-weight: bold; margin-top: 12px; }
@@ -208,12 +235,17 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <body>
   <div class="name">{{fullName}}</div>
   <div class="headline">{{headline}}</div>
-  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • Email: {{email}} • Telefone: {{phone}}</div>
+  <div class="meta-lines">
+    <div class="meta-line">Email: {{email}}</div>
+    <div class="meta-line">Telefone: {{phone}}</div>
+    <div class="meta-line">Cidade: {{locationCity}} • {{locationState}} • {{locationCountry}}</div>
+    <div class="meta-line">Estado civil: {{maritalStatus}}</div>
+  </div>
   <div class="label">Resumo</div>
   <div class="content">{{content}}</div>
   <div class="label">Experiências</div>
   <div>{{experiences}}</div>
-  <div class="label">Educação</div>
+  <div class="label">Escolaridade</div>
   <div>{{education}}</div>
   <div class="label">Skills</div>
   <div>{{skills}}</div>
@@ -231,8 +263,9 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #0b1220; padding: 28px; background: #fff; }
-  h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; background: #fff; padding: 0; margin: 0; }
+  h1 { margin: 0; font-size: 14pt; font-weight: bold; }
   h2 { margin: 4px 0 0; font-size: 14px; color: #475569; font-weight: 600; }
   .meta { font-size: 12px; color: #64748b; margin: 12px 0 18px; }
   .section { margin-top: 16px; }
@@ -245,7 +278,12 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <body>
   <h1>{{fullName}}</h1>
   <h2>{{headline}}</h2>
-  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
+  <div class="meta-lines">
+    <div class="meta-line">Email: {{email}}</div>
+    <div class="meta-line">Telefone: {{phone}}</div>
+    <div class="meta-line">Cidade: {{locationCity}} • {{locationState}} • {{locationCountry}}</div>
+    <div class="meta-line">Estado civil: {{maritalStatus}}</div>
+  </div>
   <div class="section">
     <div class="label">Resumo</div>
     <div class="content">{{content}}</div>
@@ -255,7 +293,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="label">Educação</div>
+    <div class="label">Escolaridade</div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -277,7 +315,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <meta charset="utf-8" />
 <style>
   * { box-sizing: border-box; }
-  body { font-family: Inter, Arial, sans-serif; color: #0f172a; padding: 0; margin: 0; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .wrap { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
   .side { background: #f8fafc; padding: 24px; border-right: 1px solid #e2e8f0; }
   .main { padding: 28px; }
@@ -318,7 +357,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
         <div>{{experiences}}</div>
       </div>
       <div class="sec">
-        <div class="label">Educação</div>
+        <div class="label">Escolaridade</div>
         <div>{{education}}</div>
       </div>
     </main>
@@ -337,7 +376,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #0b1220; padding: 24px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #475569; margin: 6px 0 10px; font-weight: 600; }
   .meta { font-size: 12px; color: #64748b; margin-bottom: 12px; }
@@ -356,7 +396,12 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <body>
   <div class="name">{{fullName}}</div>
   <div class="headline">{{headline}}</div>
-  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
+  <div class="meta-lines">
+    <div class="meta-line">Email: {{email}}</div>
+    <div class="meta-line">Telefone: {{phone}}</div>
+    <div class="meta-line">Cidade: {{locationCity}} • {{locationState}} • {{locationCountry}}</div>
+    <div class="meta-line">Estado civil: {{maritalStatus}}</div>
+  </div>
   <div class="grid">
     <div>
       <div class="card section">
@@ -368,7 +413,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
         <div>{{experiences}}</div>
       </div>
       <div class="card section">
-        <div class="label">Educação</div>
+        <div class="label">Escolaridade</div>
         <div>{{education}}</div>
       </div>
     </div>
@@ -393,7 +438,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #0b1220; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 26px; font-weight: 800; }
   .headline { color: #475569; margin: 6px 0 14px; font-weight: 600; }
   .meta { font-size: 12px; color: #64748b; margin-bottom: 18px; }
@@ -413,7 +459,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   <div class="content">{{content}}</div>
   <div class="label">Experiências</div>
   <div class="tl">{{experiences}}</div>
-  <div class="label">Educação</div>
+  <div class="label">Escolaridade</div>
   <div class="tl">{{education}}</div>
   <div class="label">Skills</div>
   <div>{{skills}}</div>
@@ -431,8 +477,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: Inter, Arial, sans-serif; color: #0b1220; padding: 0; margin: 0; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .bar { height: 6px; background: #0ea5e9; }
   .wrap { padding: 24px; }
   .name { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
@@ -466,7 +512,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
         <div>{{experiences}}</div>
       </div>
       <div class="card" style="grid-column: span 2;">
-        <div class="label">Educação</div>
+        <div class="label">Escolaridade</div>
         <div>{{education}}</div>
       </div>
     </div>
@@ -509,7 +555,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   <h2>Experiências</h2>
   <ul>{{experiences}}</ul>
 
-  <h2>Educação</h2>
+  <h2>Escolaridade</h2>
   <ul>{{education}}</ul>
 
   <h2>Habilidades</h2>
@@ -528,7 +574,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #0b1220; padding: 24px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #475569; margin: 6px 0 10px; font-weight: 600; }
   .meta { font-size: 12px; color: #64748b; margin-bottom: 12px; }
@@ -556,7 +603,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
       <div>{{experiences}}</div>
     </div>
     <div class="card" style="grid-column: span 2;">
-      <div class="label">Educação</div>
+      <div class="label">Escolaridade</div>
       <div>{{education}}</div>
     </div>
   </div>
@@ -574,7 +621,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #111; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #444; margin: 4px 0 12px; }
   .meta { font-size: 12px; color: #666; margin-bottom: 12px; }
@@ -596,7 +644,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="label">Educação</div>
+    <div class="label">Escolaridade</div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -617,7 +665,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #111; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #444; margin: 4px 0 12px; }
   .meta { font-size: 12px; color: #666; margin-bottom: 12px; }
@@ -660,7 +709,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #111; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #444; margin: 4px 0 12px; }
   .meta { font-size: 12px; color: #666; margin-bottom: 12px; }
@@ -682,7 +732,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="label">Educação</div>
+    <div class="label">Escolaridade</div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -696,14 +746,15 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   },
   {
     key: 'education-teaching',
-    name: 'Educação • Docência',
+    name: 'Escolaridade • Docência',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #111; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #444; margin: 4px 0 12px; }
   .meta { font-size: 12px; color: #666; margin-bottom: 12px; }
@@ -746,7 +797,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #111; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 24px; font-weight: 800; }
   .headline { color: #444; margin: 4px 0 12px; }
   .meta { font-size: 12px; color: #666; margin-bottom: 12px; }
@@ -768,7 +820,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     <div>{{experiences}}</div>
   </div>
   <div class="section">
-    <div class="label">Educação</div>
+    <div class="label">Escolaridade</div>
     <div>{{education}}</div>
   </div>
   <div class="section">
@@ -789,7 +841,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Arial, sans-serif; color: #0b1220; padding: 28px; }
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
   .headline { color: #475569; margin: 6px 0 12px; font-weight: 600; }
   .meta { font-size: 12px; color: #64748b; margin-bottom: 16px; }
@@ -807,7 +860,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   <div class="content">{{content}}</div>
   <div class="label" style="margin-top:14px;">Experiências</div>
   <div>{{experiences}}</div>
-  <div class="label" style="margin-top:14px;">Educação</div>
+    <div class="label" style="margin-top:14px;">Escolaridade</div>
   <div>{{education}}</div>
   <div class="label" style="margin-top:14px;">Habilidades</div>
   <div>{{skills}}</div>
@@ -821,7 +874,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Data Science • Projetos',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  body{font-family:Arial,sans-serif;color:#0b1220;padding:24px}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name{font-size:24px;font-weight:900;letter-spacing:-.02em}
   .headline{color:#475569;margin:6px 0 10px;font-weight:600}
   .meta{font-size:12px;color:#64748b;margin-bottom:12px}
@@ -837,7 +891,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   <div class="card"><div class="label">Resumo</div><div class="content">{{content}}</div></div>
   <div class="grid" style="margin-top:12px">
     <div class="card"><div class="label">Projetos e Resultados (Métricas)</div><div>{{experiences}}</div></div>
-    <div class="card"><div class="label">Stack e Habilidades</div><div>{{skills}}</div><div class="label" style="margin-top:10px">Educação</div><div>{{education}}</div></div>
+    <div class="card"><div class="label">Stack e Habilidades</div><div>{{skills}}</div><div class="label" style="margin-top:10px">Escolaridade</div><div>{{education}}</div></div>
   </div>
 </body></html>`,
     atsReady: true,
@@ -848,8 +902,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'DevOps • Infraestrutura',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  *{box-sizing:border-box}
-  body{font-family:Arial,sans-serif;color:#0b1220;margin:0}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .wrap{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
   .side{background:#0f172a0d;padding:20px;border-right:1px solid #e2e8f0}
   .main{padding:24px}
@@ -874,7 +928,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
       <div class="content">{{content}}</div>
       <div class="label">Experiências (Infra/Cloud)</div>
       <div>{{experiences}}</div>
-      <div class="label">Educação</div>
+      <div class="label">Escolaridade</div>
       <div>{{education}}</div>
     </main>
   </div>
@@ -887,7 +941,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Administrativo • Escritório',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  body{font-family:Arial,sans-serif;color:#111;padding:28px}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name{font-size:22px;font-weight:800}
   .headline{color:#444;margin:4px 0 12px}
   .meta{font-size:12px;color:#666;margin-bottom:12px}
@@ -911,7 +966,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Financeiro • Contabilidade',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  body{font-family:Arial,sans-serif;color:#111;padding:24px}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name{font-size:24px;font-weight:900}
   .headline{color:#444;margin:4px 0 12px}
   .meta{font-size:12px;color:#666;margin-bottom:12px}
@@ -926,7 +982,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   <div class="grid">
     <div class="card"><div class="label">Experiências</div><div>{{experiences}}</div></div>
     <div class="card"><div class="label">Habilidades e Ferramentas</div><div>{{skills}}</div><div class="label" style="margin-top:10px">Resumo</div><div class="content">{{content}}</div></div>
-    <div class="card" style="grid-column:span 2"><div class="label">Educação</div><div>{{education}}</div></div>
+    <div class="card" style="grid-column:span 2"><div class="label">Escolaridade</div><div>{{education}}</div></div>
   </div>
 </body></html>`,
     atsReady: true,
@@ -937,7 +993,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Jurídico • Advogado',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  body{font-family:Arial,sans-serif;color:#111;padding:26px}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name{font-size:22px;font-weight:900}
   .headline{color:#444;margin:2px 0 10px}
   .meta{font-size:12px;color:#666;margin-bottom:12px}
@@ -966,7 +1023,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Varejo • Atendimento',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  body{font-family:Arial,sans-serif;color:#111;padding:24px}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .name{font-size:22px;font-weight:900}
   .headline{color:#444;margin:4px 0 10px}
   .meta{font-size:12px;color:#666;margin-bottom:12px}
@@ -979,7 +1037,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
   <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
   <div class="card"><div class="label">Habilidades</div><div>{{skills}}</div></div>
   <div class="card"><div class="label">Experiência</div><div>{{experiences}}</div></div>
-  <div class="card"><div class="label">Educação</div><div>{{education}}</div></div>
+  <div class="card"><div class="label">Escolaridade</div><div>{{education}}</div></div>
   <div class="card"><div class="label">Resumo</div><div class="content">{{content}}</div></div>
 </body></html>`,
     atsReady: true,
@@ -990,8 +1048,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Hotelaria • Turismo',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  *{box-sizing:border-box}
-  body{font-family:Arial,sans-serif;color:#111;margin:0}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .bar{height:6px;background:#0ea5e9}
   .wrap{padding:24px}
   .name{font-size:22px;font-weight:900}
@@ -1011,7 +1069,7 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
       <div class="card"><div class="label">Resumo</div><div class="content">{{content}}</div></div>
       <div class="card"><div class="label">Habilidades de Hospitalidade</div><div>{{skills}}</div></div>
       <div class="card" style="grid-column:span 2"><div class="label">Experiência</div><div>{{experiences}}</div></div>
-      <div class="card" style="grid-column:span 2"><div class="label">Educação</div><div>{{education}}</div></div>
+      <div class="card" style="grid-column:span 2"><div class="label">Escolaridade</div><div>{{education}}</div></div>
     </div>
   </div>
 </body></html>`,
@@ -1023,8 +1081,8 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     name: 'Produto • PM',
     body: `{{fullName}} — {{headline}}\n\n{{content}}`,
     html: `<!doctype html><html><head><meta charset="utf-8" /><style>
-  *{box-sizing:border-box}
-  body{font-family:Arial,sans-serif;color:#0b1220;margin:0}
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; padding: 0; margin: 0; }
   .bar{height:6px;background:#10b981}
   .wrap{padding:24px}
   .name{font-size:24px;font-weight:900;letter-spacing:-.02em}
@@ -1044,13 +1102,104 @@ export const SIMPLE_TEMPLATES: SimpleTemplate[] = [
     <div>{{skills}}</div>
     <div class="label">Resumo</div>
     <div class="content">{{content}}</div>
-    <div class="label">Educação</div>
+    <div class="label">Escolaridade</div>
     <div>{{education}}</div>
   </div>
 </body></html>`,
     atsReady: true,
     premium: true,
   },
+  {
+    key: 'abnt-professional',
+    name: 'ABNT Profissional (3cm superior)',
+    body: `{{fullName}}\n{{headline}}\n\n{{content}}`,
+    html: `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; text-align: justify; padding: 0; margin: 0; }
+  h1 { margin: 0; font-size: 14pt; font-weight: bold; text-align: center; text-transform: uppercase; }
+  h2 { margin: 4pt 0 0; font-size: 12pt; color: #000; font-weight: normal; text-align: center; }
+  .meta { font-size: 11pt; color: #000; margin: 12pt 0 18pt; text-align: center; }
+  .section { margin-top: 12pt; }
+  .label { font-size: 12pt; color: #000; text-transform: uppercase; font-weight: bold; margin-bottom: 6pt; }
+  .content { white-space: pre-wrap; line-height: 1.5; text-indent: 12pt; }
+  ul { margin: 0; padding-left: 0; list-style-position: inside; }
+  li { margin: 2pt 0; padding-left: 0; text-indent: 0; }
+  a { color: #000; text-decoration: underline; }
+</style>
+</head>
+<body>
+  <h1>{{fullName}}</h1>
+  <h2>{{headline}}</h2>
+  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • {{email}} • {{phone}}</div>
+  
+  <div class="section">
+    <div class="label">Objetivo Profissional</div>
+    <div class="content">{{content}}</div>
+  </div>
+  
+  <div class="section">
+    <div class="label">Formação Acadêmica</div>
+    <div>{{education}}</div>
+  </div>
+  
+  <div class="section">
+    <div class="label">Experiência Profissional</div>
+    <div>{{experiences}}</div>
+  </div>
+  
+  <div class="section">
+    <div class="label">Qualificações e Competências</div>
+    <div>{{skills}}</div>
+  </div>
+</body>
+</html>`,
+    atsReady: true,
+    premium: true,
+  },
+  {
+    key: 'abnt-academico',
+    name: 'ABNT Acadêmico (Estrutura Completa)',
+    body: `{{fullName}}\n{{headline}}\n\n{{content}}`,
+    html: `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4; margin: 3cm 2cm 2cm 3cm; }
+  body { font-family: 'Times New Roman', Times, serif; color: #000; font-size: 12pt; line-height: 1.5; text-align: justify; padding: 0; margin: 0; }
+  h1 { font-size: 14pt; margin: 0 0 8pt; font-weight: bold; text-align: left; text-transform: uppercase; }
+  h2 { font-size: 12pt; margin: 14pt 0 6pt; font-weight: bold; text-transform: uppercase; }
+  .meta { font-size: 11pt; margin-bottom: 8pt; }
+  .sep { height: 1pt; background: #000; opacity: .1; margin: 6pt 0 10pt; }
+  .content { white-space: pre-wrap; margin-bottom: 10pt; }
+  ul { margin: 0; padding-left: 0; list-style-position: inside; }
+  li { margin: 2pt 0; padding-left: 0; text-indent: 0; }
+  a { color: #000; text-decoration: none; }
+</style>
+</head>
+<body>
+  <h1>{{fullName}}</h1>
+  <div class="meta">{{locationCity}}, {{locationState}}, {{locationCountry}} • LinkedIn: {{linkedin}} • GitHub: {{github}} • Site: {{website}}</div>
+  <div class="sep"></div>
+  
+  <h2>Objetivo Profissional</h2>
+  <div class="content">{{content}}</div>
+
+  <h2>Formação Acadêmica</h2>
+  <div>{{education}}</div>
+
+  <h2>Experiência Profissional</h2>
+  <div>{{experiences}}</div>
+
+  <h2>Qualificações e Competências</h2>
+  <div>{{skills}}</div>
+</body>
+</html>`,
+    atsReady: true,
+    premium: true,
+  },
 ];
-
-

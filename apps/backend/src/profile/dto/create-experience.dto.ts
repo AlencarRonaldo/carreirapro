@@ -21,5 +21,3 @@ export class CreateExperienceDto {
   @IsString()
   description?: string;
 }
-
-

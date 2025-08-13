@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CoverLettersService } from './cover-letters.service';
 import { GenerateCoverLetterDto, UpdateCoverLetterDto } from './dto';
@@ -22,7 +31,11 @@ export class CoverLettersController {
   }
 
   @Patch(':id')
-  update(@Req() req: any, @Param('id') id: string, @Body() body: UpdateCoverLetterDto) {
+  update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateCoverLetterDto,
+  ) {
     return this.service.updateCoverLetter(req.user.sub, id, body);
   }
 
@@ -31,5 +44,3 @@ export class CoverLettersController {
     return this.service.getCoverLetterTemplates();
   }
 }
-
-

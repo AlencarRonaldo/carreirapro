@@ -120,6 +120,11 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Forçar escala normal caso alguma extensão/navegador aplique zoom global */
+  html[data-force-normal-scale="true"] {
+    zoom: 1 !important;
+  }
   
   /* Smooth theme transitions */
   html {

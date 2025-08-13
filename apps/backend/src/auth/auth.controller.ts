@@ -16,7 +16,7 @@ class RegisterDto extends LoginDto {
   name!: string;
   @IsOptional()
   @IsString()
-  selectedPlan?: 'starter'|'pro'|'team';
+  selectedPlan?: 'starter' | 'pro' | 'team';
 }
 
 class ForgotDto {
@@ -49,7 +49,12 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    return this.auth.register(body.email, body.password, body.selectedPlan, body.name);
+    return this.auth.register(
+      body.email,
+      body.password,
+      body.selectedPlan,
+      body.name,
+    );
   }
 
   @Post('forgot-password')
@@ -74,5 +79,3 @@ export class AuthController {
     return { id: sub, email, plan, subscriptionStatus } as any;
   }
 }
-
-
