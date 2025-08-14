@@ -19,7 +19,7 @@ import { profileSchema, type ProfileFormData } from "@/lib/validations/profile"
 import { useProfile } from "@/hooks/useProfile"
 import { useAutoSave } from "@/hooks/useAutoSave"
 import { MapPin, Phone, Mail, Globe, Github, Linkedin, Loader2, Save } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 interface ProfileInfoFormProps {
   onSuccess?: () => void
@@ -68,17 +68,23 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
     delay: 2000,
   })
 
-  // Expose forceSave to parent components
+  // Expose forceSave to parent components using useRef to avoid memory leaks
+  const forceSaveRef = useRef(forceSave)
+  useEffect(() => {
+    forceSaveRef.current = forceSave
+  }, [forceSave])
+  
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).__profileFormForceSave = forceSave
+      // Use a stable reference that doesn't change
+      (window as any).__profileFormForceSave = () => forceSaveRef.current()
     }
     return () => {
       if (typeof window !== 'undefined') {
-        (window as any).__profileFormForceSave = null
+        delete (window as any).__profileFormForceSave
       }
     }
-  }, [forceSave])
+  }, []) // Empty deps - setup once
 
   // Load profile data when available - SEMPRE carrega quando o perfil mudar
   useEffect(() => {
@@ -102,11 +108,9 @@ export function ProfileInfoForm({ onSuccess, enableAutoSave = true }: ProfileInf
       console.log('🔍 ProfileInfoForm - Always resetting form with profile data:', newData)
       console.log('🔍 ProfileInfoForm - Before reset - current form values:', form.getValues())
       
-      // Use timeout to ensure state updates are complete
-      setTimeout(() => {
-        reset(newData)
-        console.log('🔍 ProfileInfoForm - After timeout reset - new form values:', form.getValues())
-      }, 50)
+      // Reset immediately without timeout to avoid timing issues
+      reset(newData)
+      console.log('🔍 ProfileInfoForm - After reset - new form values:', form.getValues())
     } else {
       console.log('🔍 ProfileInfoForm - No profile data, not resetting form')
     }

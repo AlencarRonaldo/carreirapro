@@ -1,0 +1,32 @@
+João Silva Santos Jr.
+Desenvolvedor Full Stack
+
+Email: joao.silva@email.com
+Telefone: (11) 99999-9999
+São Paulo, SP
+
+EXPERIÊNCIA PROFISSIONAL
+
+Tech Solutions Ltda
+Desenvolvedor Senior
+Janeiro 2020 - Presente
+Responsável pelo desenvolvimento de aplicações web usando React e Node.js
+
+Inovação Digital Corp
+Desenvolvedor Pleno  
+Março 2018 - Dezembro 2019
+Desenvolvimento de APIs REST e integração com bancos de dados
+
+EDUCAÇÃO
+
+Universidade de São Paulo
+Bacharelado em Ciência da Computação
+2014 - 2017
+
+HABILIDADES
+JavaScript
+TypeScript
+React
+Node.js
+Python
+PostgreSQL

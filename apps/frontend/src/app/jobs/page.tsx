@@ -1,10 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import { API_BASE, fetchWithAuth } from "@/lib/api"
+import { PDFDebugDemo } from "@/components/demo/PDFDebugDemo"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 type Analysis = {
   id: string
@@ -41,7 +43,8 @@ export default function JobsPage() {
   const [documents, setDocuments] = useState<DocumentItem[]>([])
   const [selectedDocId, setSelectedDocId] = useState<string>("")
 
-  async function onAnalyze() {
+  // Memoize analyze function to prevent recreation
+  const onAnalyze = useCallback(async () => {
     setLoading(true)
     try {
       const res = await fetchWithAuth(`${API_BASE}/jobs/analyze`, {
@@ -58,9 +61,10 @@ export default function JobsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [url, description])
 
-  async function onGenerateCoverLetter() {
+  // Memoize generate cover letter function
+  const onGenerateCoverLetter = useCallback(async () => {
     if (!analysis) return
     setGenLoading(true)
     try {
@@ -81,9 +85,10 @@ export default function JobsPage() {
     } finally {
       setGenLoading(false)
     }
-  }
+  }, [analysis, tone, language])
 
-  async function onOptimizeResume() {
+  // Memoize optimize resume function
+  const onOptimizeResume = useCallback(async () => {
     if (!analysis) return
     setOptLoading(true)
     try {
@@ -101,7 +106,7 @@ export default function JobsPage() {
     } finally {
       setOptLoading(false)
     }
-  }
+  }, [analysis, selectedDocId])
 
   async function calculateScoreAutomatically(a: Analysis) {
     setScoreLoading(true)
@@ -135,27 +140,54 @@ export default function JobsPage() {
     finally { setSaveLoading(false) }
   }
 
+  // Memoize calculateScoreAutomatically to prevent recreating on each render
+  const memoizedCalculateScore = useCallback((analysisData: Analysis) => {
+    calculateScoreAutomatically(analysisData)
+  }, [])
+
   // calcula automaticamente o score quando houver uma nova análise
   useEffect(() => {
     if (analysis) {
-      calculateScoreAutomatically(analysis)
+      memoizedCalculateScore(analysis)
     } else {
       setScore(null)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analysis])
+  }, [analysis, memoizedCalculateScore])
+
+  // Use AbortController for request cancellation
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // carregar lista de documentos disponíveis (não arquivados)
   useEffect(() => {
+    // Cancel previous request if exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
+    const abortController = new AbortController()
+    abortControllerRef.current = abortController
+
     ;(async () => {
       try {
         const res = await fetchWithAuth(`${API_BASE}/documents`)
         if (!res.ok) return
         const list = await res.json()
         const docs = Array.isArray(list) ? list.map((d: any) => ({ id: d.id, title: d.title })) : []
-        setDocuments(docs)
-      } catch {}
+        if (!abortController.signal.aborted) {
+          setDocuments(docs)
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Error loading documents:', error)
+        }
+      }
     })()
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
   }, [])
 
   async function onSaveAsApplication() {
@@ -171,9 +203,17 @@ export default function JobsPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl p-6 space-y-6">
+    <main className="mx-auto max-w-7xl p-6 space-y-6 text-base">
       <Toaster />
-      <h1 className="text-2xl font-semibold">Análise de Vagas</h1>
+      <h1 className="text-2xl font-semibold">Análise de Vagas & Demos</h1>
+
+      <Tabs defaultValue="jobs" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="jobs">Análise de Vagas</TabsTrigger>
+          <TabsTrigger value="pdf-debug">Demo: PDF Debug</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="jobs" className="space-y-6">
 
       <section className="space-y-3">
         <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="URL da vaga (opcional)" className="border rounded px-3 py-2 w-full" />
@@ -266,6 +306,12 @@ export default function JobsPage() {
           )}
         </section>
       )}
+        </TabsContent>
+
+        <TabsContent value="pdf-debug">
+          <PDFDebugDemo />
+        </TabsContent>
+      </Tabs>
     </main>
   )
 }

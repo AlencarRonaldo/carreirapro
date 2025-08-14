@@ -31,7 +31,8 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { linkedInImportSchema, type LinkedInImportData } from "@/lib/validations/profile"
 import { useProfile } from "@/hooks/useProfile"
-import { Linkedin, AlertTriangle, CheckCircle, Loader2, Info, Upload } from "lucide-react"
+import { PDFImportDebug, createMockPDFData, type PDFExtractedData } from "@/components/forms/PDFImportDebug"
+import { Linkedin, AlertTriangle, CheckCircle, Loader2, Info, Upload, FileText, Settings } from "lucide-react"
 
 interface LinkedInImportFormProps {
   onSuccess?: () => void
@@ -44,6 +45,8 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
   const [importedData, setImportedData] = useState<any>(null)
   const [lastImportResult, setLastImportResult] = useState<any>(null)
   const [showReviewDialog, setShowReviewDialog] = useState(false)
+  const [showPDFDebug, setShowPDFDebug] = useState(false)
+  const [pdfExtractedData, setPdfExtractedData] = useState<PDFExtractedData | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const form = useForm<LinkedInImportData>({
@@ -132,6 +135,57 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
     "linkedin.com/in/seu-perfil", 
     "https://www.linkedin.com/in/seu-perfil/"
   ]
+
+  // Simula a análise de um PDF e detecção de problemas
+  const simulatePDFAnalysis = (file: File): PDFExtractedData => {
+    // Em um cenário real, aqui você faria a extração real do PDF
+    const mockData = createMockPDFData()
+    
+    // Simula alguns problemas baseados no nome do arquivo para demonstração
+    if (file.name.toLowerCase().includes('scan')) {
+      mockData.confidence = {
+        overall: 45,
+        personalInfo: 60,
+        experiences: 30,
+        education: 40,
+        skills: 50
+      }
+      mockData.issues = [
+        ...mockData.issues || [],
+        {
+          field: "fullName",
+          type: "low_confidence",
+          message: "Nome extraído de PDF escaneado com baixa qualidade",
+          suggestion: "Verifique se o nome está correto"
+        },
+        {
+          field: "experiences",
+          type: "missing",
+          message: "Experiências profissionais não foram detectadas adequadamente",
+          suggestion: "PDF escaneado pode precisar de OCR melhor"
+        }
+      ]
+    }
+    
+    return mockData
+  }
+
+  const handlePDFCorrections = (correctedData: any) => {
+    console.log('🎯 PDF Corrections applied:', correctedData)
+    setImportedData(correctedData)
+    setLastImportResult(correctedData)
+    setShowPDFDebug(false)
+    setImportStatus('success')
+    setShowReviewDialog(true)
+    onSuccess?.()
+    onImportComplete?.()
+  }
+
+  const handlePDFRetry = () => {
+    setShowPDFDebug(false)
+    // Reopens file picker
+    fileInputRef.current?.click()
+  }
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -263,6 +317,27 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
           </div>
         </div>
 
+        {/* Debug Test Button (for development) */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const mockData = createMockPDFData()
+                // Simula um PDF com problemas para mostrar o debugger
+                mockData.confidence = { overall: 65, personalInfo: 80, experiences: 50, education: 70, skills: 60 }
+                setPdfExtractedData(mockData)
+                setShowPDFDebug(true)
+              }}
+              className="text-xs"
+            >
+              <Settings className="w-3 h-3 mr-1" />
+              Testar Interface de Debug PDF
+            </Button>
+          </div>
+        )}
+
         {/* Resume Upload */}
         <div className="space-y-3">
           <h4 className="text-sm font-medium">Importar currículo (PDF/DOCX)</h4>
@@ -279,16 +354,33 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
                 onChange={async (e) => {
                   const f = e.target.files?.[0]
                   if (!f) return
+                  
                   try {
-                    const result = await importFromResume(f, true)
-                    console.log('🎯 Resume Import - Result:', result)
-                    setImportedData(result)
-                    setLastImportResult(result)
-                    setImportStatus('success')
-                    setShowReviewDialog(true)
-                    console.log('🎯 Resume Import - Dialog should show now')
+                    // Simula análise do PDF e detecção de problemas
+                    const extractedData = simulatePDFAnalysis(f)
+                    setPdfExtractedData(extractedData)
+                    
+                    // Se a confiança geral for baixa ou houver muitos problemas, mostra o debugger
+                    const shouldShowDebugger = 
+                      extractedData.confidence?.overall && extractedData.confidence.overall < 80 ||
+                      (extractedData.issues && extractedData.issues.length > 0)
+                    
+                    if (shouldShowDebugger) {
+                      console.log('🎯 PDF needs debugging - showing debug interface')
+                      setShowPDFDebug(true)
+                    } else {
+                      // PDF com alta confiança, prossegue normalmente
+                      console.log('🎯 PDF import successful - proceeding normally')
+                      const result = await importFromResume(f, true)
+                      console.log('🎯 Resume Import - Result:', result)
+                      setImportedData(result)
+                      setLastImportResult(result)
+                      setImportStatus('success')
+                      setShowReviewDialog(true)
+                    }
                   } catch (error) {
                     console.error('🎯 Resume Import - Error:', error)
+                    setImportStatus('error')
                   }
                 }}
                 className="hidden"
@@ -490,6 +582,21 @@ export function LinkedInImportForm({ onSuccess, onImportComplete }: LinkedInImpo
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* PDF Import Debug Interface */}
+        {showPDFDebug && pdfExtractedData && (
+          <Dialog open={showPDFDebug} onOpenChange={setShowPDFDebug}>
+            <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0">
+              <PDFImportDebug
+                data={pdfExtractedData}
+                onCorrectionsApplied={handlePDFCorrections}
+                onRetryImport={handlePDFRetry}
+                onCancel={() => setShowPDFDebug(false)}
+                className="h-full overflow-auto"
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </CardContent>
     </Card>
   )

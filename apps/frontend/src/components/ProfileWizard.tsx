@@ -11,6 +11,8 @@ import { ExperienceForm } from "@/components/forms/ExperienceForm"
 import { EducationForm } from "@/components/forms/EducationForm"
 import { SkillsForm } from "@/components/forms/SkillsForm"
 import { LinkedInImportForm } from "@/components/forms/LinkedInImportForm"
+import { ResumeCompletion } from "@/components/ResumeCompletion"
+import { SaveStatus } from "@/components/ui/save-status"
 import { useProfile, useExperiences, useEducation, useSkills } from "@/hooks/useProfile"
 import type { Profile as ProfileType, Experience as ExperienceType, Education as EducationType, Skill as SkillType } from "@/hooks/useProfile"
 import { 
@@ -167,18 +169,26 @@ export function ProfileWizard({
   useEffect(() => setMounted(true), [])
   const [currentStep, setCurrentStep] = useState(initialStep)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
+  const [showCompletion, setShowCompletion] = useState(false)
   // Hooks para dados e loaders (uma única instância)
   const { profile, loadProfile } = useProfile()
   const { experiences, loadExperiences } = useExperiences()
   const { education, loadEducation } = useEducation() 
   const { skills, loadSkills } = useSkills()
   const [stepCompletion, recheckCompletion] = useStepCompletion(profile, experiences, education, skills)
+  
+  // Memoize load functions to prevent infinite loops
+  const stableLoadProfile = useCallback(() => loadProfile(), [])
+  const stableLoadExperiences = useCallback(() => loadExperiences(), [])
+  const stableLoadEducation = useCallback(() => loadEducation(), [])
+  const stableLoadSkills = useCallback(() => loadSkills(), [])
+  const stableRecheckCompletion = useCallback(() => recheckCompletion(), [profile, experiences, education, skills])
   // Rechecar conclusão quando o perfil for atualizado em qualquer step
   useEffect(() => {
     const handleUpdate = () => {
       console.log('📄 ProfileWizard - Profile updated, rechecking completion...')
       // Apenas recheck, não recarrega dados (evita race condition)
-      recheckCompletion()
+      stableRecheckCompletion()
     }
     
     const handleImportUpdate = async () => {
@@ -186,12 +196,12 @@ export function ProfileWizard({
       // Só recarrega após importação para sincronizar
       try {
         await Promise.all([
-          loadProfile().catch(() => {}),
-          loadExperiences().catch(() => {}),
-          loadEducation().catch(() => {}),
-          loadSkills().catch(() => {}),
+          stableLoadProfile().catch(() => {}),
+          stableLoadExperiences().catch(() => {}),
+          stableLoadEducation().catch(() => {}),
+          stableLoadSkills().catch(() => {}),
         ])
-        recheckCompletion()
+        stableRecheckCompletion()
       } catch (error) {
         console.error('📄 ProfileWizard - Error refreshing after import:', error)
       }
@@ -219,17 +229,17 @@ export function ProfileWizard({
         window.removeEventListener('skills-reload', handleImportUpdate)
       }
     }
-  }, [recheckCompletion, loadProfile, loadExperiences, loadEducation, loadSkills])
+  }, [stableRecheckCompletion, stableLoadProfile, stableLoadExperiences, stableLoadEducation, stableLoadSkills])
 
-  // Load all data when component mounts
+  // Load all data when component mounts (only once)
   useEffect(() => {
     Promise.all([
-      loadProfile().catch(() => {}),
-      loadExperiences().catch(() => {}),
-      loadEducation().catch(() => {}),
-      loadSkills().catch(() => {})
+      stableLoadProfile().catch(() => {}),
+      stableLoadExperiences().catch(() => {}),
+      stableLoadEducation().catch(() => {}),
+      stableLoadSkills().catch(() => {})
     ])
-  }, [loadProfile, loadExperiences, loadEducation, loadSkills])
+  }, []) // Empty dependency array - load only on mount
 
   // Update completed steps based on data completion
   useEffect(() => {
@@ -260,10 +270,10 @@ export function ProfileWizard({
   const canFinish = completedSteps.length === STEPS.length
 
   const handleNext = async () => {
-    // Se for o último passo e já pode finalizar, chama onComplete
+    // Se for o último passo e já pode finalizar, mostra tela de conclusão
     if (isLast) {
-      if (canFinish && onComplete) {
-        onComplete()
+      if (canFinish) {
+        setShowCompletion(true)
       }
       return
     }
@@ -378,6 +388,20 @@ export function ProfileWizard({
 
   const completionPercentage = (completedSteps.length / STEPS.length) * 100
 
+  // Se deve mostrar tela de conclusão
+  if (showCompletion) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="mx-auto max-w-7xl">
+          <ResumeCompletion 
+            onClose={() => onComplete?.()}
+            onBackToProfile={() => setShowCompletion(false)}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background p-6" suppressHydrationWarning>
       {!mounted ? (
@@ -389,11 +413,18 @@ export function ProfileWizard({
       <div className="mx-auto max-w-7xl space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold">Complete seu Perfil Profissional</h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-3xl font-bold">Complete seu Perfil Profissional</h1>
+            <SaveStatus className="hidden md:inline-flex" />
+          </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Preencha todas as seções para ter um perfil completo e aumentar suas chances 
             de encontrar oportunidades de trabalho ideais.
           </p>
+          {/* Mobile Save Status */}
+          <div className="md:hidden flex justify-center">
+            <SaveStatus />
+          </div>
           
           {/* Progress Overview */}
           <Card className="max-w-md mx-auto">

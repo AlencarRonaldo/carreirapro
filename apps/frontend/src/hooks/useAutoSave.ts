@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useMemo } from "react"
 import { useDebounce } from "use-debounce"
 import { toast } from "sonner"
 
@@ -21,9 +21,19 @@ export function useAutoSave<T>({
 }: UseAutoSaveOptions<T>) {
   const [debouncedData] = useDebounce(data, delay)
   const previousDataRef = useRef<T | undefined>()
+  const previousHashRef = useRef<string | undefined>()
   const isSavingRef = useRef(false)
   const hasChangesRef = useRef(false)
   const savePromiseRef = useRef<Promise<void> | null>(null)
+  
+  // Memoize data serialization to avoid repeated JSON.stringify
+  const dataHash = useMemo(() => {
+    try {
+      return JSON.stringify(debouncedData)
+    } catch {
+      return String(debouncedData)
+    }
+  }, [debouncedData])
 
   const saveToStorage = useCallback((data: T) => {
     if (typeof window !== "undefined") {
@@ -107,31 +117,33 @@ export function useAutoSave<T>({
     }
   }, [enabled, autoSave])
 
-  // Auto-save when debounced data changes
+  // Auto-save when debounced data changes (optimized with hash comparison)
   useEffect(() => {
     if (!enabled) return
 
-    const hasDataChanged = JSON.stringify(debouncedData) !== JSON.stringify(previousDataRef.current)
+    const hasDataChanged = dataHash !== previousHashRef.current
     
-    if (hasDataChanged && previousDataRef.current !== undefined) {
+    if (hasDataChanged && previousHashRef.current !== undefined) {
       hasChangesRef.current = true
       // Salva no localStorage imediatamente para não perder dados
       saveToStorage(debouncedData)
       autoSave()
     }
     
+    previousHashRef.current = dataHash
     previousDataRef.current = debouncedData
-  }, [debouncedData, enabled, autoSave, saveToStorage])
+  }, [dataHash, debouncedData, enabled, autoSave, saveToStorage])
 
-  // Save draft to localStorage periodically
+  // Save draft to localStorage periodically (reduced frequency)
   useEffect(() => {
     if (!enabled) return
 
     const interval = setInterval(() => {
       if (hasChangesRef.current) {
         saveToStorage(debouncedData)
+        hasChangesRef.current = false // Reset flag after saving
       }
-    }, 10000) // Save draft every 10 seconds
+    }, 30000) // Save draft every 30 seconds instead of 10
 
     return () => clearInterval(interval)
   }, [enabled, debouncedData, saveToStorage])
